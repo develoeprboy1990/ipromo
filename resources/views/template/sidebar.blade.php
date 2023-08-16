@@ -29,7 +29,7 @@
                 </li>
 
                  <li>
-                    <a href="{{URL('/Offers')}}" class="waves-effect">
+                    <a href="{{route('offers.index')}}" class="waves-effect">
                         <i class="bx bxs-user-plus"></i>
                         <span key="t-calendar">Offers</span>
                     </a>

@@ -71,7 +71,7 @@ return [
 
     'timezone' => 'Asia/Karachi',
     //'timezone' => 'Asia/Kuala_Lumpur',
-    
+
 
     /*
     |--------------------------------------------------------------------------
@@ -187,7 +187,7 @@ return [
         /*
          * Package Service Providers...
          */
-
+        Intervention\Image\ImageServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -197,8 +197,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Yajra\Datatables\DatatablesServiceProvider::class,
-         Barryvdh\DomPDF\ServiceProvider::class,
-         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
     ],
 
@@ -218,6 +218,7 @@ return [
         'Datatables' => Yajra\Datatables\Facades\Datatables::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Image' => Intervention\Image\Facades\Image::class
 
     ])->toArray(),
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\Accounts;
 use App\Http\Controllers\User;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\OfferController;
 ;
 
 //PMS
@@ -31,14 +32,14 @@ Route::get('/Agent/{id}',[Home::class,'ShowAgent']);
 Route::post('/UserAdd',[Home::class,'UserAdd']);
 Route::get('/Promo/{id}',[Home::class,'Promo']);
 
-
-
+ 
+Route::resource('offers', OfferController::class);
 
 Route::get('/',[Accounts::class,'Login']);
 Route::get('/Login',[Accounts::class,'Login']);
 Route::get('/Logout', [Accounts::class, 'Logout']);
 Route::post('/UserVerify',[Accounts::class,'UserVerify']);
-Route::get('/Offers',[Accounts::class,'Offers']);
+
 
  
  Route::group(['middleware' => ['CheckAdmin']], function () {
