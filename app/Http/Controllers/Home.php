@@ -79,6 +79,8 @@ class Home extends Controller
          $phone = '+' . $number;
       elseif (preg_match('/^01\d{9}/', $number))
          $phone = '+6' . $number;
+      else
+         $phone = $number;
 
       return $phone;
    }
