@@ -17,3 +17,4 @@ yarn-error.log
 /public/upload
 composer.lock
 /public/documents
+/public/uploads
