@@ -108,16 +108,6 @@ class User extends Controller
      {
 
 
-///////////////////////USER RIGHT & CONTROL ///////////////////////////////////////////    
-$allow= check_role(session::get('UserID'),'User','List / Create');
-if($allow[0]->Allow=='N')
-{
-return redirect()->back()->with('error', 'You access is limited')->with('class','danger');
-}
-////////////////////////////END SCRIPT ////////////////////////////////////////////////
-
-
-
             $this->validate($request,[
           
          'Email'=>'required|max:40|unique:user',         
@@ -148,13 +138,6 @@ $id = DB::table('user')->insertGetId($data);
      {
  session::put('menu','User');     
         $pagetitle = 'User';
- ///////////////////////USER RIGHT & CONTROL ///////////////////////////////////////////    
-$allow= check_role(session::get('UserID'),'User','Update');
-if($allow[0]->Allow=='N')
-{
-return redirect()->back()->with('error', 'You access is limited')->with('class','danger');
-}
-////////////////////////////END SCRIPT ////////////////////////////////////////////////
 
          $v_users= DB::table('user')->where('UserID',$id)->get();
 
@@ -166,13 +149,6 @@ public function UserUpdate(request $request)
      {
 
      
-  ///////////////////////USER RIGHT & CONTROL ///////////////////////////////////////////    
-$allow= check_role(session::get('UserID'),'User','Update');
-if($allow[0]->Allow=='N')
-{
-return redirect()->back()->with('error', 'You access is limited')->with('class','danger');
-}
-////////////////////////////END SCRIPT ////////////////////////////////////////////////
 
          $this->validate($request,[
           
@@ -203,13 +179,6 @@ return redirect()->back()->with('error', 'You access is limited')->with('class',
 
      public function UserDelete($id)
      {  
-       ///////////////////////USER RIGHT & CONTROL ///////////////////////////////////////////    
-$allow= check_role(session::get('UserID'),'User','Delete');
-if($allow[0]->Allow=='N')
-{
-return redirect()->back()->with('error', 'You access is limited')->with('class','danger');
-}
-////////////////////////////END SCRIPT ////////////////////////////////////////////////
 
             $id = DB::table('user')->where('UserID',$id)->delete();
             return redirect('User')->with('error','User Deleted Successfully')->with('class','success');
