@@ -13,7 +13,7 @@
     <h1> Best deals of the day</h1>
     <h3 id="now_date"></h3>
     <div class="product">
-        <img src="{{URL('/')}}/uploads/thumbnail/{{ $currentOffer->Image }}" alt="{!! $currentOffer->Title !!}"+>
+        <img src="{{URL('/')}}/uploads/thumbnail/{{ $currentOffer->Image }}" alt="{!! $currentOffer->Title !!}" +>
         <div class="details">
             <?php //echo date('Y-m-d H:i:s', $end_datetime);exit; 
             ?>
@@ -45,66 +45,52 @@
         </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script type="text/javascript">
-        // var date = new Date().toISOString().slice(0, 10);
-
-        //alert(date);
-
-        //var offerDate = new Date('July 29, 2023');
+    <script>
         var offerDate = new Date('<?php echo date('Y-m-d H:i:s', $end_datetime); ?>');
+        const today   = new Date();
+        const offerEndTime = offerDate - today; 
+        var end_datetime = <?php echo $end_datetime;?>;
+        // Set the target time for the countdown (in milliseconds)
+        const targetTime = new Date().getTime() + offerEndTime; //  minutes
+        // Update the countdown timer every second
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        function updateTimer() {
 
-        function countdown() {
 
-            const today = new Date();
+            $('#now_date').html(new Date());
+            const currentTime = new Date().getTime();
+            const timeRemaining = targetTime - currentTime;
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval); // Stop the timer
+                redirectToNextPage(); // Redirect to the next page
+            } else { 
+                // 1 sec= 1000 ms
+                // 1 min = 60 sec
+                // 1 hour = 60 mins
+                // 1 day = 24 hours
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const years = Math.floor(days / 365);
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
-            $('#now_date').html(today);
+                const days_el = document.getElementById("days_left");
+                days_el.innerHTML = days;
+                const hours_el = document.getElementById("hours_left");
+                hours_el.innerHTML = hours;
+                const mins_el = document.getElementById("mins_left");
+                mins_el.innerHTML = minutes;
+                const secs_el = document.getElementById("secs_left");
+                secs_el.innerHTML = seconds;
 
-            //If offer ends reset to new value
-
-            if (today.getTime() < offerDate.getTime()) {
-                //console.log("True, currentdate and time are greater");
-            } else if (today.getTime() > offerDate.getTime()) {
-                //console.log("False, currentdate and time are less");
-                offerDate = resetOfferDate();
             }
-
-            /*if (today === offerDate) {
-                //alert(today.getSeconds());
-                //alert(offerDate.getSeconds());
-                offerDate = resetOfferDate();
-            }*/
-
-            //offerTime will have the total millseconds 
-            const offerTime = offerDate - today;
-            //alert(offerTime);
-            // 1 sec= 1000 ms
-            // 1 min = 60 sec
-            // 1 hour = 60 mins
-            // 1 day = 24 hours
-            const offerDays = Math.floor(offerTime / (1000 * 60 * 60 * 24));
-            const offerHours = Math.floor((offerTime / (1000 * 60 * 60) % 24));
-            const offerMins = Math.floor((offerTime / (1000 * 60) % 60));
-            const offerSecs = Math.floor((offerTime / 1000) % 60);
-
-            const days_el = document.getElementById("days_left");
-            days_el.innerHTML = offerDays;
-            const hours_el = document.getElementById("hours_left");
-            hours_el.innerHTML = offerHours;
-            const mins_el = document.getElementById("mins_left");
-            mins_el.innerHTML = offerMins;
-            const secs_el = document.getElementById("secs_left");
-            secs_el.innerHTML = offerSecs;
-
         }
 
-        function resetOfferDate() {
+        function redirectToNextPage() {
+            // Replace 'next-page.html' with the URL of the next page you want to redirect to
             window.location.reload();
-            //alert('hello');
-            //const futureDate = new Date();
-            //futureDate.setDate(futureDate.getDate() + 5);
-            //return futureDate;
         }
-        setInterval(countdown, 1000);
     </script>
 </body>
 
