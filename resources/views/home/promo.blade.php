@@ -51,7 +51,7 @@
         const offerEndTime = offerDate - today; 
         var end_datetime = <?php echo $end_datetime;?>;
         // Set the target time for the countdown (in milliseconds)
-        const targetTime = new Date().getTime() + offerEndTime; //  minutes
+        const targetTime = new Date().getTime() + offerEndTime; //  minutes in seconds
         // Update the countdown timer every second
         const timerInterval = setInterval(updateTimer, 1000);
         
