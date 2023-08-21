@@ -1,0 +1,2 @@
+-------------------21-08-2023-------------------------------
+ALTER TABLE `customers` ADD `RentalRate` VARCHAR(255) NULL DEFAULT NULL AFTER `CustomerPhone`, ADD `Address` TEXT NULL DEFAULT NULL AFTER `RentalRate`; 

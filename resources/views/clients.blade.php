@@ -139,6 +139,8 @@
                 <th>#</th>
                 <th>Full Name</th>
                 <th>Phone Number</th>
+                <th>Rental Rate</th>
+                <th>Address</th>
                 <th>Agent By</th>
                 <th>Created on</th>
                 <th>Action</th>
@@ -154,7 +156,10 @@
      <td  >{{$no++}}</td>
                 <td scope="row">{{$value->CustomerName}}</td>
                 <td>{{$value->CustomerPhone}}</td>
+                <td>{{$value->RentalRate}}</td>
+                <td>{{$value->Address}}</td>
                 <td>{{$value->FullName}}</td>
+                
                 <td>{{$value->CustomerCreated}}</td>    
               <td><div class="d-flex gap-1">
         <!-- <a href="{{URL('/CustomerEdit/'.$value->CustomerID)}}" class="text-secondary"><i class="mdi mdi-pencil font-size-15"></i></a> -->
