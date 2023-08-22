@@ -34,7 +34,7 @@ class Home extends Controller
 
    public function __construct()
    {
-      opcache_reset(); 
+     // opcache_reset(); 
    }
 
 
