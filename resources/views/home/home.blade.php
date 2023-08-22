@@ -8,13 +8,14 @@
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="assets/images/favicon.ico">
+        <link rel="shortcut icon" href="{{URL('/')}}/assets/images/favicon.jpeg">
         <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@200;300&display=swap" rel="stylesheet">
 <style>
   #radioButtons{
   margin: 5px 0 10px 0;
 }
 
-input[type=text], select {
+input[type=text], select, textarea {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -23,6 +24,7 @@ input[type=text], select {
   border-radius: 4px;
   box-sizing: border-box;
 }
+
 
 input[type=submit] {
   width: 100%;
@@ -69,6 +71,12 @@ div {
 
     <label for="lname">Phone Number</label>
     <input type="text" id="Phone" name="Phone" placeholder="Your Phone ...">
+
+    <label for="lname">Rental Rate Number</label>
+    <input type="text" id="RentalRate" name="RentalRate" placeholder="Your Rental Rate ...">
+    
+    <label for="lname">Address</label>
+    <textarea name="Address"></textarea>
     
     <input type="submit" value="Submit">
   </form>

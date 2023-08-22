@@ -7,7 +7,7 @@
         <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
-        <link rel="shortcut icon" href="{{URL('/')}}/assets/images/favicon.ico">
+       <link rel="shortcut icon" href="{{URL('/')}}/assets/images/favicon.jpeg">
 
         <!-- Bootstrap Css -->
         <link href="{{URL('/')}}/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />

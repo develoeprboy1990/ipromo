@@ -18,7 +18,6 @@ use App\Http\Controllers\User;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\OfferController;
-;
 
 //PMS
 use App\Http\Controllers\Work;

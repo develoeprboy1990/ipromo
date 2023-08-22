@@ -64,7 +64,9 @@ class Home extends Controller
       $data = array(
          'AgentID' =>  $request->input('AgentID'),
          'CustomerName' => $request->input('FullName'),
-         'CustomerPhone' => $CustomerPhone
+         'CustomerPhone' => $CustomerPhone,
+         'RentalRate' => $request->input('RentalRate'),
+         'Address' => $request->input('Address')
       );
 
       $id = DB::table('customers')->insertGetId($data);
