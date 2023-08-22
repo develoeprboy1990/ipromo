@@ -34,7 +34,7 @@ class Home extends Controller
 
    public function __construct()
    {
-     // opcache_reset(); 
+      // opcache_reset(); 
    }
 
 
@@ -68,10 +68,171 @@ class Home extends Controller
          'RentalRate' => $request->input('RentalRate'),
          'Address' => $request->input('Address')
       );
+      /* FIRT AUTHENTICATE*/
+      $token = $this->get_payex_token();
+      /* END AUTHORIZATION*/
+      $responseLink = SITE_ADDR . Router::$page_name . '/response';
+      $accept_url   = SITE_ADDR . Router::$page_name . '/accept';
+      $reject_url   = SITE_ADDR . Router::$page_name . '/reject';
+      if ($token) {
+         try {
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+               CURLOPT_URL => 'https://api.payex.io/api/v1/PaymentIntents',
+               CURLOPT_RETURNTRANSFER => true,
+               CURLOPT_ENCODING => '',
+               CURLOPT_MAXREDIRS => 10,
+               CURLOPT_TIMEOUT => 0,
+               CURLOPT_FOLLOWLOCATION => true,
+               CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+               CURLOPT_CUSTOMREQUEST => 'POST',
+               CURLOPT_POSTFIELDS => '[
+						{
+							"amount": ' . $price . ',
+							"currency": "MYR", 
+							"customer_name": "' . $buyer_name . '",
+							"email": "advertisement@gfgproperty.com",
+							"contact_number": "' . $phonenumber . '",
+							"address": "' . $submeterAddress . '",
+							"postcode": "43200",
+							"city": "Bandar Makh",
+							"state": "SGR",
+							"country": "MY", 
+							"description": "Payment For Room:' . $roomtype . ' | ' . $metercode . '",
+							"reference_number": "' . $rec_id . '",  
+							"return_url": "' . $responseLink . '",
+							"callback_url": "' . $responseLink . '",
+							"accept_url": "' . $accept_url . '",
+							"reject_url": "' . $reject_url . '"
+						}
+						]',
+               CURLOPT_HTTPHEADER => array(
+                  'Authorization: Bearer ' . $token . '',
+                  'Content-Type: application/json',
+                  'Cookie: ARRAffinity=d30cc046ce27286e641d8e18d378ae394091489768cf8cf9b268164b427296dd; ARRAffinitySameSite=d30cc046ce27286e641d8e18d378ae394091489768cf8cf9b268164b427296dd'
+               ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
+            $result = json_decode($response);
+            $status = $result->result[0]->error;
+            if ($result->status == '00') {
+               $status  = $result->message;
+            } else {
+               $db->rawQuery("UPDATE token SET purchase_id='0' WHERE id ='$id' ");
+            }
+            $data = [
+               'status' => $status,
+               'url' => $result->result[0]->url
+            ];
+            echo json_encode($data);
+            exit;
+         } catch (Exception $e) {
+            $log = "";
+            $log .= "Caught exception: " . $e->getMessage() . PHP_EOL;
+            $this->createLog('API', $log, 'ERROR');
+         }
+      } else {
+         $data = ['status' => 'Authentication error!', 'url' => $responseLink];
+         echo json_encode($data);
+      }
 
       $id = DB::table('customers')->insertGetId($data);
-
       return redirect('Promo/' . $CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success');
+   }
+
+
+
+   public function accept(Request $request)
+   {
+      $log = '<pre>';
+      $log .= print_r($request->all(), true);
+      $this->createLog('accept', $log, 'ERROR  ');
+      return $this->render_view("purchase2/accept.php", $_REQUEST);
+   }
+
+   public function reject(Request $request)
+   {
+      $log = '<pre>';
+      $log .= print_r($request->all(), true);
+      $this->createLog('reject', $log, 'ERROR');
+   }
+
+   public function response()
+   {
+   }
+
+   /**
+    * Get Payex Token
+    *
+    * @param   string $url  Payex API Url.
+    * @return bool|mixed
+    */
+   private function get_payex_token()
+   {
+      $auth = base64_encode("account@gfgproperty.com:mCUTyTmL7nWyIFD4SkPBjbrm7OAGyg8Q");
+      try {
+         $curl = curl_init();
+         curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.payex.io/api/Auth/Token',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => array(
+               'Authorization: Basic ' . $auth . '',
+               'Cookie: ARRAffinity=d30cc046ce27286e641d8e18d378ae394091489768cf8cf9b268164b427296dd; ARRAffinitySameSite=d30cc046ce27286e641d8e18d378ae394091489768cf8cf9b268164b427296dd'
+            ),
+         ));
+         $response = curl_exec($curl);
+         curl_close($curl);
+         $result =  json_decode($response);
+         $token  = $result->token;
+      } catch (Exception $e) {
+         $log = "";
+         $log .= "Caught exception: " . $e->getMessage() . PHP_EOL;
+         $this->createLog('API', $log, 'ERROR');
+         $token  = false;
+      }
+      return $token;
+   }
+
+
+   /**
+    * Logging method.
+    *
+    * @param string $file name of log.
+    * @param string $logdata content to log.
+    * @param string $type LogLevel.
+    *
+    * @return void
+    */
+   public function createLog($file, $logdata, $type)
+   {
+      $folder = __DIR__ . '/../../logs';
+      $filepath = $folder . '/' . $file . '_' . date("Ymd") . '.txt';
+      if (is_dir($folder) == false) {
+         mkdir($folder, 0777);
+      }
+
+      if (is_file($filepath) == false) {
+         $newlog = date("Y-m-d h:i:s") . PHP_EOL;
+      } else {
+         $newlog = PHP_EOL . date("Y-m-d h:i:s") . PHP_EOL;
+      }
+
+      $newlog .= "LogLevel: " . $type . PHP_EOL;
+      $newlog .= $logdata;
+      $newlog .= "-------------------------";
+
+      try {
+         file_put_contents($filepath, $newlog, FILE_APPEND);
+      } catch (Exception $e) {
+         echo 'Caught exception: ',  $e->getMessage(), "\n";
+      }
    }
 
    private function addCodeWithNumber($number)

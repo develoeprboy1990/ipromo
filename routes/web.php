@@ -22,31 +22,23 @@ use App\Http\Controllers\OfferController;
 //PMS
 use App\Http\Controllers\Work;
 
-
- 
- 
- 
 Route::get('/Agent',[Home::class,'Show']);
 Route::get('/Agent/{id}',[Home::class,'ShowAgent']);
 Route::post('/UserAdd',[Home::class,'UserAdd']);
 Route::get('/Promo/{id}',[Home::class,'Promo']);
 
+Route::get('/accept',[Home::class,'accept'])->name('accept');
+Route::get('/reject',[Home::class,'reject'])->name('reject');
+Route::any('/response',[Home::class,'response'])->name('response');
  
 Route::resource('offers', OfferController::class);
-
 Route::get('/',[Accounts::class,'Login']);
 Route::get('/Login',[Accounts::class,'Login']);
 Route::get('/Logout', [Accounts::class, 'Logout']);
 Route::post('/UserVerify',[Accounts::class,'UserVerify']);
-
-
  
- Route::group(['middleware' => ['CheckAdmin']], function () {
-
-
+Route::group(['middleware' => ['CheckAdmin']], function () {
 Route::get('/Dashboard',[Accounts::class,'Dashboard']);
-
-
 
 Route::get('/User',[User::class,'Show']);
 Route::post('/UserSave',[User::class,'UserSave']);
@@ -70,8 +62,7 @@ Route::post('/CompanyUpdate/',[CompanyController::class,'CompanyUpdate']);
 Route::get('/CompanyDelete/{id}',[CompanyController::class,'CompanyDelete']);
 
 
-Route::get('Backup', function () {
-	
+Route::get('Backup', function () {	
 	/* php artisan migrate */
     \Artisan::call('database:backup');
     dd("Done");

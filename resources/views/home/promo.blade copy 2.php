@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Countdown Timer</title>
-    <link rel="stylesheet" href="{{URL('/')}}/assets/css/style.css">
+     <link rel="stylesheet" href="{{URL('/')}}/assets/css/style.css">
 </head>
 
 <body>
@@ -45,7 +45,7 @@
         </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script>
+     <script>
         var offerDate = new Date('<?php echo date('Y-m-d H:i:s', $end_datetime); ?>');
         const today   = new Date();
         const offerEndTime = offerDate - today; 
