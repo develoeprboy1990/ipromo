@@ -60,20 +60,25 @@ class Home extends Controller
 
    public function UserAdd(request $request)
    {
-      $CustomerPhone = $this->addCodeWithNumber($request->input('Phone'));
+      $CustomerPhone   = $this->addCodeWithNumber($request->input('Phone'));
+      $buyer_name      = $request->input('FullName');
+      $submeterAddress = $request->input('Address');
+      $price           = $request->input('RentalRate');
       $data = array(
-         'AgentID' =>  $request->input('AgentID'),
-         'CustomerName' => $request->input('FullName'),
+         'AgentID'       =>  $request->input('AgentID'),
+         'CustomerName'  => $buyer_name,
          'CustomerPhone' => $CustomerPhone,
-         'RentalRate' => $request->input('RentalRate'),
-         'Address' => $request->input('Address')
+         'RentalRate'    => $price,
+         'Address'       => $submeterAddress
       );
+      $rec_id = DB::table('customers')->insertGetId($data);
       /* FIRT AUTHENTICATE*/
       $token = $this->get_payex_token();
       /* END AUTHORIZATION*/
-      $responseLink = SITE_ADDR . Router::$page_name . '/response';
-      $accept_url   = SITE_ADDR . Router::$page_name . '/accept';
-      $reject_url   = SITE_ADDR . Router::$page_name . '/reject';
+      $responseLink = route('response');
+      $accept_url   = route('accept');
+      $reject_url   = route('reject');
+
       if ($token) {
          try {
             $curl = curl_init();
@@ -92,7 +97,7 @@ class Home extends Controller
 							"currency": "MYR", 
 							"customer_name": "' . $buyer_name . '",
 							"email": "advertisement@gfgproperty.com",
-							"contact_number": "' . $phonenumber . '",
+							"contact_number": "' . $CustomerPhone . '",
 							"address": "' . $submeterAddress . '",
 							"postcode": "43200",
 							"city": "Bandar Makh",
@@ -118,8 +123,9 @@ class Home extends Controller
             $status = $result->result[0]->error;
             if ($result->status == '00') {
                $status  = $result->message;
-            } else {
-               $db->rawQuery("UPDATE token SET purchase_id='0' WHERE id ='$id' ");
+               DB::table('customers')->where('CustomerID',$rec_id)->update(['remarks'=>$result,'payment_api_response'=>$result,'payment_status'=>$result->status]);
+            } else { 
+               $status  = $result->message;
             }
             $data = [
                'status' => $status,
@@ -131,17 +137,15 @@ class Home extends Controller
             $log = "";
             $log .= "Caught exception: " . $e->getMessage() . PHP_EOL;
             $this->createLog('API', $log, 'ERROR');
+            return redirect('Agent')->with('error', 'User Created Successfully')->with('class', 'success');
          }
       } else {
-         $data = ['status' => 'Authentication error!', 'url' => $responseLink];
+         $data = ['status' => 'Authentication error!', 'url' => $reject_url];
          echo json_encode($data);
+         return redirect('Agent')->with('error', 'Authentication error!')->with('class', 'success')->with('msg',$data);
       }
-
-      $id = DB::table('customers')->insertGetId($data);
-      return redirect('Promo/' . $CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success');
+      
    }
-
-
 
    public function accept(Request $request)
    {
@@ -158,8 +162,29 @@ class Home extends Controller
       $this->createLog('reject', $log, 'ERROR');
    }
 
-   public function response()
-   {
+   public function response(Request $request)
+   {  $auth_code           = $request->auth_code; //00
+      $response            = $request->response; //Approved 
+      $reference_number    = $request->reference_number; //ID from table
+      $log                 = print_r($_REQUEST, true); 
+      $this->createLog('response_'.$reference_number, $log, 'Success');
+
+      if ($auth_code == '00' && $response == 'Approved') { 
+         $collection_id       = $request->collection_id;
+         $fpx_buyer_name      = $request->fpx_buyer_name;
+         $fpx_buyer_bank_name = !empty($request->fpx_buyer_bank_name) ? $request->fpx_buyer_bank_name : '';
+         date_default_timezone_set("Asia/Kuala_Lumpur");
+         $date                = date("Y-m-d H:i:s");
+         $fpx_buyer_bank_id   = $request->fpx_buyer_bank_id;
+         $description         = $request->description;
+         $description        .= ' Bank Name: ' . $fpx_buyer_bank_name;
+         $txn_type            = $request->txn_type;
+         $customer =  DB::table('customers')->where(['CustomerID' => $reference_number])->first();
+
+         $data = ['payment_api_response'=>$customer->payment_api_response.' == ******************* == '.$log,'payment_status'=>$response];
+          DB::table('customers')->where('CustomerID',$rec_id)->update($data);
+          return redirect('Promo/' . $customer->CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success')->with('msg',$response);
+      }
    }
 
    /**
