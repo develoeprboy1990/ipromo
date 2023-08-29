@@ -18,6 +18,7 @@ use App\Http\Controllers\User;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\ProductController;
 
 //PMS
 use App\Http\Controllers\Work;
@@ -32,6 +33,7 @@ Route::get('/reject',[Home::class,'reject'])->name('reject');
 Route::any('/response',[Home::class,'response'])->name('response');
  
 Route::resource('offers', OfferController::class);
+Route::resource('products', ProductController::class);
 Route::get('/',[Accounts::class,'Login']);
 Route::get('/Login',[Accounts::class,'Login']);
 Route::get('/Logout', [Accounts::class, 'Logout']);
