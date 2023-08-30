@@ -1,2 +1,19 @@
 -------------------21-08-2023-------------------------------
 ALTER TABLE `customers` ADD `RentalRate` VARCHAR(255) NULL DEFAULT NULL AFTER `CustomerPhone`, ADD `Address` TEXT NULL DEFAULT NULL AFTER `RentalRate`; 
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `products`
+--
+
+CREATE TABLE `products` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `qrcode` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `price` decimal(22,2) DEFAULT '0.00',
+  `installment_price` decimal(22,2) DEFAULT '0.00',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

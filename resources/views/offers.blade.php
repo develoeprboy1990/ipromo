@@ -95,9 +95,17 @@
                                                     <div class="col-sm-2">
                                                         <label class="col-form-label fw-bold" for="Days">Days</label>
                                                     </div>
-                                                    <div class="col-sm-9">
+                                                    <div class="col-sm-2">
                                                         <input type="number" id="Days" class="form-control" name="Days" placeholder="Days" value="{{@$offer->Days}}">
                                                     </div>
+
+                                                    <div class="col-sm-2">
+                                                        <label class="col-form-label fw-bold" for="Days">Discount</label>
+                                                    </div>
+                                                    <div class="col-sm-5">
+                                                        <input type="number" id="discount" class="form-control" name="discount" placeholder="Discount" value="{{@$offer->discount}}">
+                                                    </div>
+
                                                 </div>
                                             </div>
 
@@ -164,7 +172,7 @@
         <script>
             $(document).ready(function() {
                 $('.remove').click(function() {
-                    var recordId = $(this).data("record-id"); 
+                    var recordId = $(this).data("record-id");
                     var confirmDelete = confirm("Are you sure you want to delete this record?");
 
                     if (confirmDelete) {
@@ -172,7 +180,7 @@
                         // You can use AJAX or any other method to delete the record
                         // For example, remove the record from the list
 
-                        $('#delete_'+recordId).submit();
+                        $('#delete_' + recordId).submit();
                     }
 
                 });
