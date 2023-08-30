@@ -26,6 +26,7 @@ use Image;
 use File;
 use PDF;
 use App\Models\Company;
+use App\Models\Product;
 
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -72,6 +73,12 @@ class Home extends Controller
          'Address'       => $submeterAddress
       );
       $rec_id = DB::table('customers')->insertGetId($data);
+
+      return redirect('Promo/' . $CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success');
+   }
+
+   public function payexapi(Request $request)
+   {
       /* FIRT AUTHENTICATE*/
       $token = $this->get_payex_token();
       /* END AUTHORIZATION*/
@@ -92,25 +99,25 @@ class Home extends Controller
                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                CURLOPT_CUSTOMREQUEST => 'POST',
                CURLOPT_POSTFIELDS => '[
-						{
-							"amount": ' . $price . ',
-							"currency": "MYR", 
-							"customer_name": "' . $buyer_name . '",
-							"email": "advertisement@gfgproperty.com",
-							"contact_number": "' . $CustomerPhone . '",
-							"address": "' . $submeterAddress . '",
-							"postcode": "43200",
-							"city": "Bandar Makh",
-							"state": "SGR",
-							"country": "MY", 
-							"description": "Payment For Room:' . $roomtype . ' | ' . $metercode . '",
-							"reference_number": "' . $rec_id . '",  
-							"return_url": "' . $responseLink . '",
-							"callback_url": "' . $responseLink . '",
-							"accept_url": "' . $accept_url . '",
-							"reject_url": "' . $reject_url . '"
-						}
-						]',
+                        {
+                           "amount": ' . $price . ',
+                           "currency": "MYR", 
+                           "customer_name": "' . $buyer_name . '",
+                           "email": "advertisement@gfgproperty.com",
+                           "contact_number": "' . $CustomerPhone . '",
+                           "address": "' . $submeterAddress . '",
+                           "postcode": "43200",
+                           "city": "Bandar Makh",
+                           "state": "SGR",
+                           "country": "MY", 
+                           "description": "Payment For Room:' . $roomtype . ' | ' . $metercode . '",
+                           "reference_number": "' . $rec_id . '",  
+                           "return_url": "' . $responseLink . '",
+                           "callback_url": "' . $responseLink . '",
+                           "accept_url": "' . $accept_url . '",
+                           "reject_url": "' . $reject_url . '"
+                        }
+                        ]',
                CURLOPT_HTTPHEADER => array(
                   'Authorization: Bearer ' . $token . '',
                   'Content-Type: application/json',
@@ -123,8 +130,8 @@ class Home extends Controller
             $status = $result->result[0]->error;
             if ($result->status == '00') {
                $status  = $result->message;
-               DB::table('customers')->where('CustomerID',$rec_id)->update(['remarks'=>$result,'payment_api_response'=>$result,'payment_status'=>$result->status]);
-            } else { 
+               DB::table('customers')->where('CustomerID', $rec_id)->update(['remarks' => $result, 'payment_api_response' => $result, 'payment_status' => $result->status]);
+            } else {
                $status  = $result->message;
             }
             $data = [
@@ -142,9 +149,8 @@ class Home extends Controller
       } else {
          $data = ['status' => 'Authentication error!', 'url' => $reject_url];
          echo json_encode($data);
-         return redirect('Agent')->with('error', 'Authentication error!')->with('class', 'success')->with('msg',$data);
+         return redirect('Agent')->with('error', 'Authentication error!')->with('class', 'success')->with('msg', $data);
       }
-      
    }
 
    public function accept(Request $request)
@@ -163,13 +169,14 @@ class Home extends Controller
    }
 
    public function response(Request $request)
-   {  $auth_code           = $request->auth_code; //00
+   {
+      $auth_code           = $request->auth_code; //00
       $response            = $request->response; //Approved 
       $reference_number    = $request->reference_number; //ID from table
-      $log                 = print_r($_REQUEST, true); 
-      $this->createLog('response_'.$reference_number, $log, 'Success');
+      $log                 = print_r($_REQUEST, true);
+      $this->createLog('response_' . $reference_number, $log, 'Success');
 
-      if ($auth_code == '00' && $response == 'Approved') { 
+      if ($auth_code == '00' && $response == 'Approved') {
          $collection_id       = $request->collection_id;
          $fpx_buyer_name      = $request->fpx_buyer_name;
          $fpx_buyer_bank_name = !empty($request->fpx_buyer_bank_name) ? $request->fpx_buyer_bank_name : '';
@@ -181,9 +188,9 @@ class Home extends Controller
          $txn_type            = $request->txn_type;
          $customer =  DB::table('customers')->where(['CustomerID' => $reference_number])->first();
 
-         $data = ['payment_api_response'=>$customer->payment_api_response.' == ******************* == '.$log,'payment_status'=>$response];
-          DB::table('customers')->where('CustomerID',$rec_id)->update($data);
-          return redirect('Promo/' . $customer->CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success')->with('msg',$response);
+         $data = ['payment_api_response' => $customer->payment_api_response . ' == ******************* == ' . $log, 'payment_status' => $response];
+         DB::table('customers')->where('CustomerID', $rec_id)->update($data);
+         return redirect('Promo/' . $customer->CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success')->with('msg', $response);
       }
    }
 
@@ -303,7 +310,8 @@ class Home extends Controller
       $currentOffer = DB::table('offers')->where(['OfferID' => $OfferID])->first();
       if ($OfferID > 0) {
          echo 'Offer ID: ' . $OfferID;
-         return view('home.promo', compact('pagetitle', 'currentOffer', 'end_datetime', 'agent'));
+         $addons = Product::get();
+         return view('home.promo', compact('pagetitle', 'currentOffer', 'end_datetime', 'agent','addons'));
       } else {
          return view('home.expire', compact('pagetitle', 'currentOffer', 'end_datetime', 'agent'));
       }

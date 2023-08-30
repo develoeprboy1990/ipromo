@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,10 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
 
-  <!-- App favicon -->
-  <link rel="shortcut icon" href="{{asset('assets/images/favicon.jpeg')}}">
-    <style> 
-
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{{asset('assets/images/favicon.jpeg')}}">
+    <style>
         .floating-button {
             position: fixed;
             bottom: 20px;
@@ -21,10 +21,10 @@
         .floating-button a {
             display: block;
             width: 100px;
-            height: 100px; 
+            height: 100px;
             border-radius: 50%;
             text-align: center;
-            line-height: 60px; 
+            line-height: 60px;
             transition: background-color 0.3s;
         }
 
@@ -38,21 +38,23 @@
         }
     </style>
 </head>
+
 <body>
     <div class="floating-button">
         <a href="https://api.whatsapp.com/send?phone={{ $agent->Phone }}" target="_blank">
             <img src="{{asset('assets/images/whatsapp2.png')}}" alt="WhatsApp">
         </a>
     </div>
-    <div class="container">
-        <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">
-            <img src="{{URL('/')}}/uploads/{{ $currentOffer->Image }}" alt="{!! $currentOffer->Title !!}" class="img-fluid">
-        </div>
-    </div>
     <main class="container">
-        <div class="container text-center">
+        <div class="container text-center" id="step1">
+
+            <div class="container">
+                <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">
+                    <img src="{{URL('/')}}/uploads/{{ $currentOffer->Image }}" alt="{!! $currentOffer->Title !!}" class="img-fluid">
+                </div>
+            </div>
             <h1> Best deals of the day</h1>
-            <h3 id="now_date"></h3> 
+            <h3 id="now_date"></h3>
 
             <h3 class="offer">Offer ends in</h3>
             <div class="row" style="background-color: #ececec;">
@@ -84,10 +86,82 @@
 
             </div>
             <div class="col pt-3">
-                <a class="btn btn-success btn-lg" href="https://api.whatsapp.com/send?phone={{ $agent->Phone }}">Book your room now</a>
+                <a class="btn btn-success btn-lg" id="next">Next >> </a>
+            </div>
 
+        </div>
 
-            </div> 
+        <div class="container text-center" id="step2"  >
+            @if(!empty($addons))
+            @foreach($addons as $prod)
+
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-12">
+                    <div class="card shadow-0 border rounded-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                                    <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                                        <img src="{{asset('uploads/products/thumbnail/'.$prod->image)}}" class="w-100">
+                                        <a href="#!">
+                                            <div class="hover-overlay">
+                                                <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-6 col-xl-6">
+                                    <h5>{{$prod->name}}</h5>
+                                    <div class="d-flex flex-row">
+                                        <div class="text-danger mb-1 me-2">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                        <span>310</span>
+                                    </div>
+                                    <div class="mt-1 mb-0 text-muted small">
+                                        <span>100% cotton</span>
+                                        <span class="text-primary"> • </span>
+                                        <span>Light weight</span>
+                                        <span class="text-primary"> • </span>
+                                        <span>Best finish<br></span>
+                                    </div> 
+                                    <p class="text-truncate mb-4 mb-md-0">{{$prod->desciption}}</p>
+                                </div>
+                                <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                                    <div class="d-flex flex-row align-items-center mb-1">
+                                        <h4 class="mb-1 me-1">{{$prod->price}}</h4>
+                                        <!-- <span class="text-danger"><s>$20.99</s></span> -->
+                                    </div>
+                                    <h6 class="text-success">Free shipping</h6>
+                                    <div class="d-flex flex-column mt-4">
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1" checked>
+                                            <label class="form-check-label" for="radio1">Option 1</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @endforeach
+            @endif
+
+            <div class="row">
+                <div class="col-sm-2 pt-3">
+                    <a class="btn btn-info btn-lg" id="previous">
+                        << Previous </a>
+                </div>
+                <div class="col-sm-2 pt-3">
+                    <a class="btn btn-success btn-lg" href="">Avail offer >> </a>
+                </div>
+            </div>
+
         </div>
 
     </main><!-- Container ends here -->
@@ -103,6 +177,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
     <script>
+        $(document).ready(function() {
+            $("#next").click(function(e) {
+                e.preventDefault();
+                $("#step1").hide();
+
+                $("#step2").show();
+            });
+            $("#previous").click(function(e) {
+                e.preventDefault();
+                $("#step12").hide();
+                $("#step1").show();
+            });
+        });
         var offerDate = new Date('<?php echo date('Y-m-d H:i:s', $end_datetime); ?>');
         const today = new Date();
         const offerEndTime = offerDate - today;
