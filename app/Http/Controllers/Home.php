@@ -27,6 +27,7 @@ use File;
 use PDF;
 use App\Models\Company;
 use App\Models\Product;
+use App\Models\Order;
 
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -77,7 +78,63 @@ class Home extends Controller
       return redirect('Promo/' . $CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success');
    }
 
-   public function payexapi(Request $request)
+
+   public function Promo($CustomerPhone)
+   {
+      $pagetitle    = 'View Promo';
+      $OfferID      = 0;
+      $now          = date('Y-m-d H:i:s');
+      $now_datetime = strtotime($now);
+      //echo 'Now DateTime:'.date('Y-m-d H:i:s', $now_datetime).'<Br>';
+
+      $customer =  DB::table('customers')->where(['CustomerPhone' => $CustomerPhone])->first();
+      $agent =  DB::table('user')->where(['UserID' => $customer->AgentID])->first();
+      $userOffer = DB::table('offers')->orderBy('OfferID', 'asc')->get();
+      foreach ($userOffer as $offer) {
+         $start_datetime = strtotime($customer->CustomerCreated);
+         $end_datetime = strtotime("+" . $offer->Days . " day", $start_datetime);
+
+         if ($end_datetime > $now_datetime) {
+            // echo 'Offer Start DateTime:' . date('Y-m-d H:i:s', $start_datetime) . '<Br>';
+            // echo 'Offer End DateTime:' . date('Y-m-d H:i:s', $end_datetime) . '<br>';
+            $OfferID = $offer->OfferID;
+            break;
+         }
+      }
+
+      $currentOffer = DB::table('offers')->where(['OfferID' => $OfferID])->first();
+
+      if ($OfferID > 0) {
+         //echo 'Offer ID: ' . $OfferID;
+         $addons = Product::get();
+         return view('home.promo', compact('pagetitle', 'currentOffer', 'end_datetime', 'agent', 'addons', 'customer'));
+      } else {
+         return view('home.expire', compact('pagetitle', 'currentOffer', 'end_datetime', 'agent'));
+      }
+   }
+
+   public function placeOrder(Request $request)
+   {
+      // $currentOffer = DB::table('offers')->where(['OfferID' => $request->OfferID])->first();
+      $customer     =  DB::table('customers')->where(['CustomerID' => $request->CustomerID])->first();
+      if ($request->id > 0) {
+         $addons = Product::whereId($request->id)->get();
+      }
+
+      $order_id = Order::create($request->all());
+      $data = array(
+         'customer'      => $customer,
+         'OfferID'       => $request->OfferID,
+         'id'            => $request->id,
+         'order_id'      => $order_id,
+         'totalprice'    => $request->totalprice,
+         'subtotalprice' => $request->subtotalprice
+      );
+      $this->payexapi($data);
+   }
+
+
+   private function payexapi($data = null)
    {
       /* FIRT AUTHENTICATE*/
       $token = $this->get_payex_token();
@@ -85,9 +142,12 @@ class Home extends Controller
       $responseLink = route('response');
       $accept_url   = route('accept');
       $reject_url   = route('reject');
-
+      $customer     = $data['customer'];
+      $order        = $data['order_id'];
+      $order_id     = $order->id;
+      
       if ($token) {
-         try {
+         try { 
             $curl = curl_init();
             curl_setopt_array($curl, array(
                CURLOPT_URL => 'https://api.payex.io/api/v1/PaymentIntents',
@@ -100,18 +160,18 @@ class Home extends Controller
                CURLOPT_CUSTOMREQUEST => 'POST',
                CURLOPT_POSTFIELDS => '[
                         {
-                           "amount": ' . $price . ',
+                           "amount": ' . $data['totalprice'] . ',
                            "currency": "MYR", 
-                           "customer_name": "' . $buyer_name . '",
+                           "customer_name": "' . $customer->CustomerName . '",
                            "email": "advertisement@gfgproperty.com",
-                           "contact_number": "' . $CustomerPhone . '",
-                           "address": "' . $submeterAddress . '",
+                           "contact_number": "' . $customer->CustomerPhone . '",
+                           "address": "' . $customer->Address . '",
                            "postcode": "43200",
                            "city": "Bandar Makh",
                            "state": "SGR",
                            "country": "MY", 
-                           "description": "Payment For Room:' . $roomtype . ' | ' . $metercode . '",
-                           "reference_number": "' . $rec_id . '",  
+                           "description": "Subscribing an offer:' . $data['OfferID'] . '",
+                           "reference_number": "' . $order_id . '",  
                            "return_url": "' . $responseLink . '",
                            "callback_url": "' . $responseLink . '",
                            "accept_url": "' . $accept_url . '",
@@ -126,11 +186,17 @@ class Home extends Controller
             ));
             $response = curl_exec($curl);
             curl_close($curl);
-            $result = json_decode($response);
+            $result = json_decode($response); 
+            
             $status = $result->result[0]->error;
             if ($result->status == '00') {
                $status  = $result->message;
-               DB::table('customers')->where('CustomerID', $rec_id)->update(['remarks' => $result, 'payment_api_response' => $result, 'payment_status' => $result->status]);
+               $order = Order::find($order_id);
+               $order->description = $result;
+               $order->payment_status = $result->status;
+               $order->payment_description = $result;
+               $order->payment_message = $status;
+               $order->save();
             } else {
                $status  = $result->message;
             }
@@ -144,12 +210,15 @@ class Home extends Controller
             $log = "";
             $log .= "Caught exception: " . $e->getMessage() . PHP_EOL;
             $this->createLog('API', $log, 'ERROR');
-            return redirect('Agent')->with('error', 'User Created Successfully')->with('class', 'success');
+            $order = Order::find($order_id);
+            $order->log_record = $log;
+            $order->save();
+            return redirect('Promo/')->with('error', 'Successfully')->with('class', 'success');
          }
       } else {
          $data = ['status' => 'Authentication error!', 'url' => $reject_url];
          echo json_encode($data);
-         return redirect('Agent')->with('error', 'Authentication error!')->with('class', 'success')->with('msg', $data);
+         return redirect('Promo/')->with('error', 'Authentication error!')->with('class', 'success')->with('msg', $data);
       }
    }
 
@@ -158,7 +227,7 @@ class Home extends Controller
       $log = '<pre>';
       $log .= print_r($request->all(), true);
       $this->createLog('accept', $log, 'ERROR  ');
-      return $this->render_view("purchase2/accept.php", $_REQUEST);
+      exit;
    }
 
    public function reject(Request $request)
@@ -166,6 +235,7 @@ class Home extends Controller
       $log = '<pre>';
       $log .= print_r($request->all(), true);
       $this->createLog('reject', $log, 'ERROR');
+      exit;
    }
 
    public function response(Request $request)
@@ -181,16 +251,26 @@ class Home extends Controller
          $fpx_buyer_name      = $request->fpx_buyer_name;
          $fpx_buyer_bank_name = !empty($request->fpx_buyer_bank_name) ? $request->fpx_buyer_bank_name : '';
          date_default_timezone_set("Asia/Kuala_Lumpur");
-         $date                = date("Y-m-d H:i:s");
          $fpx_buyer_bank_id   = $request->fpx_buyer_bank_id;
          $description         = $request->description;
          $description        .= ' Bank Name: ' . $fpx_buyer_bank_name;
          $txn_type            = $request->txn_type;
-         $customer =  DB::table('customers')->where(['CustomerID' => $reference_number])->first();
 
+         $order = Order::find($reference_number);
+         $order->payment_message = $order->payment_message . 'Response Message' . $response;
+         $order->save();
+
+         $customer =  DB::table('customers')->where(['CustomerID' => $order->CustomerID])->first();
          $data = ['payment_api_response' => $customer->payment_api_response . ' == ******************* == ' . $log, 'payment_status' => $response];
-         DB::table('customers')->where('CustomerID', $rec_id)->update($data);
          return redirect('Promo/' . $customer->CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success')->with('msg', $response);
+      } else {
+         $order = Order::find($reference_number);
+         $order->payment_message = $order->payment_message . 'Response Message' . $response;
+         $order->payment_message =  $order->payment_message . $request->description;
+         $order->save();
+
+         $customer =  DB::table('customers')->where(['CustomerID' => $order->CustomerID])->first();
+         return redirect('Promo/' . $customer->CustomerPhone)->with('error', 'Payment Could not completed')->with('class', 'success')->with('msg', $response);
       }
    }
 
@@ -280,48 +360,4 @@ class Home extends Controller
 
       return $phone;
    }
-
-   public function Promo($CustomerPhone)
-   {
-      $pagetitle = 'View Promo';
-
-      $OfferID = 0;
-      $now = date('Y-m-d H:i:s');
-      $now_datetime = strtotime($now);
-      //echo 'Now DateTime:'.date('Y-m-d H:i:s', $now_datetime).'<Br>';
-
-
-      $customer =  DB::table('customers')->where(['CustomerPhone' => $CustomerPhone])->first();
-      $agent =  DB::table('user')->where(['UserID' => $customer->AgentID])->first();
-      $userOffer = DB::table('offers')->orderBy('OfferID', 'asc')->get();
-      foreach ($userOffer as $offer) {
-         $start_datetime = strtotime($customer->CustomerCreated);
-         $end_datetime = strtotime("+" . $offer->Days . " day", $start_datetime);
-
-
-         if ($end_datetime > $now_datetime) {
-            echo 'Offer Start DateTime:' . date('Y-m-d H:i:s', $start_datetime) . '<Br>';
-            echo 'Offer End DateTime:' . date('Y-m-d H:i:s', $end_datetime) . '<br>';
-            $OfferID = $offer->OfferID;
-            break;
-         }
-      }
-
-      $currentOffer = DB::table('offers')->where(['OfferID' => $OfferID])->first();
-      if ($OfferID > 0) {
-         echo 'Offer ID: ' . $OfferID;
-         $addons = Product::get();
-         return view('home.promo', compact('pagetitle', 'currentOffer', 'end_datetime', 'agent','addons'));
-      } else {
-         return view('home.expire', compact('pagetitle', 'currentOffer', 'end_datetime', 'agent'));
-      }
-   }
-
-
-
-   /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
 } // end of controller

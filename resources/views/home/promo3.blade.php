@@ -45,52 +45,58 @@
             <img src="{{asset('assets/images/whatsapp2.png')}}" alt="WhatsApp">
         </a>
     </div>
+
     <main class="container">
-        <div class="container-fluid text-center" id="step1">
+        <div class="container text-center" id="step1">
+
+            <div class="container">
+                <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">
+                    <img src="{{URL('/')}}/uploads/thumbnail/{{ $currentOffer->Image }}" alt="{!! $currentOffer->Title !!}" class="img-fluid">
+                </div>
+            </div>
             <h1> Best deals of the day</h1>
             <h3 id="now_date"></h3>
-            <div class="product">
-                <img src="{{URL('/')}}/uploads/thumbnail/{{ $currentOffer->Image }}" alt="{!! $currentOffer->Title !!}" +>
-                <div class="details text-center">
-                    <h3>🔥{!! $currentOffer->Title !!}🔥</h3>
-                    <p>{!! $currentOffer->Description !!}🤩
-                    </p>
-                    <div class="wrap">
-                        <h3 class="offer">Offer ends in</h3>
-                        <div class="timer">
-                            <div class="days">
-                                <span id="days_left"> 0</span>
-                                days
-                            </div>
-                            <div class="hours">
-                                <span id="hours_left"> 0 </span>
-                                hours
-                            </div>
-                            <div class="mins">
-                                <span id="mins_left"> 0 </span>
-                                mins
-                            </div>
-                            <div class="secs">
-                                <span id="secs_left"> 0 </span>
-                                secs
-                            </div>
-                        </div>
+
+            <h3 class="offer">Offer ends in</h3>
+            <div class="row" style="background-color: #ececec;">
+                <div class="col-sm-2 p-2"></div>
+                <div class="col-sm-2 p-2">
+                    <div class="days">
+                        <span id="days_left"> 0</span>
+                        days
                     </div>
                 </div>
+                <div class="col-sm-2 p-2">
+                    <div class="hours">
+                        <span id="hours_left"> 0 </span>
+                        hours
+                    </div>
+                </div>
+                <div class="col-sm-2 p-2">
+                    <div class="mins">
+                        <span id="mins_left"> 0 </span>
+                        mins
+                    </div>
+                </div>
+                <div class="col-sm-2 p-2">
+                    <div class="secs">
+                        <span id="secs_left"> 0 </span>
+                        secs
+                    </div>
+                </div>
+
             </div>
             <div class="col pt-3">
                 <a class="btn btn-success btn-lg" id="next">Next >> </a>
             </div>
         </div>
+
         <div class="container text-center" id="step2" style="display:none">
             @if(!empty($addons))
-
-            <h5 class="card-title">Choose an addon </h5>
-            <p class="card-text">Please select an addon if you are interested</p>
             @foreach($addons as $prod)
             <div class="row justify-content-center mb-3">
                 <div class="col-md-12">
-                    <div class="card shadow-0 border rounded-3" style="background-color: #f3f7f3;">
+                    <div class="card shadow-0 border rounded-3">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
@@ -140,56 +146,52 @@
 
             @endforeach
             @endif
-            <form action="{{route('placeorder')}}" method="post">
-                @csrf
-                <div class="container mt-3">
-                    <input type="hidden" name="CustomerID" id="CustomerID" value="{{$customer->CustomerID}}">
-                    <input type="hidden" name="offerprice" id="offerprice" value="100">
-                    <input type="hidden" name="discountprice" id="discountprice" value="{{$currentOffer->discount}}">
-                    <input type="hidden" name="subtotalprice" id="subtotalprice" value="">
-                    <input type="hidden" name="totalprice" id="totalprice" value="">
-                    <input type="hidden" name="id" id="id" value="0">
-                    <input type="hidden" name="OfferID" id="OfferID" value=" {{ $currentOffer->OfferID}}">
-                   
-                    <h2>Review Order</h2>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Offer</th>
-                                <th>Discount</th>
-                                <th>Add On price</th>
-                                <th>Sub Total</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span id="offer">50</span></td>
-                                <td><span id="discount">5</span></td>
-                                <td><span id="addon">0</span></td>
-                                <td><span id="subtotal">0</span></td>
-                                <td><span id="total">0</span></td>
-                            </tr>
+            <div class="container mt-3">
+                <input type="hidden" name="userphone" id="userphone" value="{{$customer->CustomerPhone}}">
+                <input type="hidden" name="offerprice" id="offerprice" value="100">
+                <input type="hidden" name="discountprice" id="discountprice" value="{{$currentOffer->discount}}">
+                <input type="hidden" name="subtotalprice" id="subtotalprice" value="">
+                <input type="hidden" name="totalprice" id="totalprice" value="">
+                <h2>Review Order</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Offer</th>
+                            <th>Discount</th>
+                            <th>Add On price</th>
+                            <th>Sub Total</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span id="offer">50</span></td>
+                            <td><span id="discount">5</span></td>
+                            <td><span id="addon">0</span></td>
+                            <td><span id="subtotal">0</span></td>
+                            <td><span id="total">0</span></td>
+                        </tr>
 
-                        </tbody>
-                    </table>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4 pt-3"></div>
+                <div class="col-sm-2 pt-3">
+                    <a class="btn btn-info btn-lg" id="previous">
+                        << Previous </a>
                 </div>
-
-                <div class="row">
-                    <div class="col-sm-4 pt-3"></div>
-                    <div class="col-sm-2 pt-3">
-                        <a class="btn btn-info btn-lg" id="previous">
-                            << Previous </a>
-                    </div>
-                    <div class="col-sm-2 pt-3">
-                        <input type="submit" class="btn btn-success btn-lg" name="submit" value="Avail Offer">Avail offer >> </input>
-                    </div>
+                <div class="col-sm-2 pt-3">
+                    <a class="btn btn-success btn-lg" href="">Avail offer >> </a>
                 </div>
-            </form>
-
+            </div>
 
         </div>
+
     </main><!-- Container ends here -->
+
+
     <footer class="py-5 text-center text-body-secondary bg-body-tertiary">
         <p> </p>
         <p class="mb-0">
@@ -204,11 +206,12 @@
             $("#next").click(function(e) {
                 e.preventDefault();
                 $("#step1").hide();
+
                 $("#step2").show();
             });
             $("#previous").click(function(e) {
                 e.preventDefault();
-                $("#step2").hide();
+                $("#step12").hide();
                 $("#step1").show();
             });
             // Add event listener to each radio button
@@ -220,7 +223,6 @@
             $('#subtotal').text(subtotalprice);
             $('#totalprice').val(subtotalprice);
             $('#total').text(subtotalprice);
-
             $('.form-check-input').on('change', function() {
                 if ($(this).is(':checked')) {
                     //$('#result').text(`Selected value: ${$(this).val()}`);                    
@@ -228,8 +230,9 @@
                     $('#addon').text(addon);
                     var total = parseFloat(subtotalprice) + parseFloat(addon);
                     $('#total').text(total);
+
                     $('#totalprice').val(total);
-                    $('#addonid').val($(this).val());
+
                 }
             });
         });

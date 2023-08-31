@@ -27,9 +27,10 @@ Route::get('/Agent',[Home::class,'Show']);
 Route::get('/Agent/{id}',[Home::class,'ShowAgent']);
 Route::post('/UserAdd',[Home::class,'UserAdd']);
 Route::get('/Promo/{id}',[Home::class,'Promo']);
+Route::post('/placeorder',[Home::class,'placeOrder'])->name('placeorder');
 
-Route::get('/accept',[Home::class,'accept'])->name('accept');
-Route::get('/reject',[Home::class,'reject'])->name('reject');
+Route::any('/accept',[Home::class,'accept'])->name('accept');
+Route::any('/reject',[Home::class,'reject'])->name('reject');
 Route::any('/response',[Home::class,'response'])->name('response');
  
 Route::resource('offers', OfferController::class);

@@ -137,6 +137,7 @@
                                                     <th>Title</th>
                                                     <th>Description</th>
                                                     <th>Days</th>
+                                                    <th>Discount</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
@@ -150,6 +151,7 @@
                                                     <td>{{$offer->Description}}</td>
 
                                                     <td>{{$offer->Days}}</td>
+                                                    <td>{{$offer->discount}}</td>
                                                     <td><a href="{{route('offers.edit',$offer->OfferID)}}" title="Edit"><i class="font-size-18 mdi mdi-pencil align-middle me-1 text-secondary"></i></a>
                                                         <i class="font-size-18 mdi mdi-trash-can-outline align-middle me-1 text-secondary remove" data-record-id="{{$offer->OfferID}}"></i>
                                                         <form method="POST" action="{{ route('offers.destroy',$offer->OfferID) }}" id="delete_{{$offer->OfferID}}">

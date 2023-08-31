@@ -130,6 +130,7 @@ class OfferController extends Controller
         $offer->Title = $request->input('Title');
         $offer->Description = trim($request->input('Description'));
         $offer->Days = trim($request->input('Days'));
+        $offer->discount = trim($request->input('discount'));
         $offer->image = $imageName;
         $offer->save();
         return redirect()->route('offers.index')->with([
