@@ -117,15 +117,14 @@ class Home extends Controller
    {
       // $currentOffer = DB::table('offers')->where(['OfferID' => $request->OfferID])->first();
       $customer     =  DB::table('customers')->where(['CustomerID' => $request->CustomerID])->first();
-      if ($request->id > 0) {
+      /* if ($request->id > 0) {
          $addons = Product::whereId($request->id)->get();
-      }
-
+      } */
       $order_id = Order::create($request->all());
       $data = array(
          'customer'      => $customer,
          'OfferID'       => $request->OfferID,
-         'id'            => $request->id,
+         'product_id'    => $request->id,
          'order_id'      => $order_id,
          'totalprice'    => $request->totalprice,
          'subtotalprice' => $request->subtotalprice
@@ -145,9 +144,9 @@ class Home extends Controller
       $customer     = $data['customer'];
       $order        = $data['order_id'];
       $order_id     = $order->id;
-      
+      $amount       = $data['totalprice'] * 100;
       if ($token) {
-         try { 
+         try {
             $curl = curl_init();
             curl_setopt_array($curl, array(
                CURLOPT_URL => 'https://api.payex.io/api/v1/PaymentIntents',
@@ -160,7 +159,7 @@ class Home extends Controller
                CURLOPT_CUSTOMREQUEST => 'POST',
                CURLOPT_POSTFIELDS => '[
                         {
-                           "amount": ' . $data['totalprice'] . ',
+                           "amount": ' . $amount . ',
                            "currency": "MYR", 
                            "customer_name": "' . $customer->CustomerName . '",
                            "email": "advertisement@gfgproperty.com",
@@ -186,17 +185,19 @@ class Home extends Controller
             ));
             $response = curl_exec($curl);
             curl_close($curl);
-            $result = json_decode($response); 
-            
+            $result = json_decode($response);
+
             $status = $result->result[0]->error;
             if ($result->status == '00') {
-               $status  = $result->message;
-               $order = Order::find($order_id);
-               $order->description = $result;
-               $order->payment_status = $result->status;
-               $order->payment_description = $result;
-               $order->payment_message = $status;
+               $status                     = $result->message;
+               $order                      = Order::find($order_id);
+
+               $order->description         = $result->request_id;
+               $order->payment_status      = $result->status;
+               $order->payment_description = $result->result[0]->key;
+               $order->payment_message     = $result->message;
                $order->save();
+               header("Location: " . $result->result[0]->url);
             } else {
                $status  = $result->message;
             }
@@ -224,17 +225,33 @@ class Home extends Controller
 
    public function accept(Request $request)
    {
+      $result = $request->all();
+      $order = Order::find($result['reference_number']);
+      $order->description         = $order->description . ' After Response from payment gateway' . $result['payment_intent'];
+      $order->payment_status      = $order->payment_status . ' After Response from payment gateway auth_code=' . $result['auth_code'];
+      $order->payment_description = $order->payment_description . ' After Response from payment gateway customer name = ' . $result['customer_name'] . ' , Description= ' . $result['description'];
+      $order->payment_message     = $order->payment_message . ' After Response from payment gateway' . $result['response'];
       $log = '<pre>';
-      $log .= print_r($request->all(), true);
+      $log .= print_r($result, true);
       $this->createLog('accept', $log, 'ERROR  ');
+      $order->log_record = $log;
+      $order->save();
       exit;
    }
 
    public function reject(Request $request)
    {
+      $result = $request->all();
+      $order = Order::find($result['reference_number']);
+      $order->description         = $order->description . ' After Response from payment gateway' . $result['payment_intent'];
+      $order->payment_status      = $order->payment_status . ' After Response from payment gateway auth_code=' . $result['auth_code'];
+      $order->payment_description = $order->payment_description . ' After Response from payment gateway customer name = ' . $result['customer_name'] . ' , Description= ' . $result['description'];
+      $order->payment_message     = $order->payment_message . ' After Response from payment gateway' . $result['response'];
       $log = '<pre>';
-      $log .= print_r($request->all(), true);
+      $log .= print_r($result, true);
       $this->createLog('reject', $log, 'ERROR');
+      $order->log_record = $log;
+      $order->save();
       exit;
    }
 
@@ -253,23 +270,22 @@ class Home extends Controller
          date_default_timezone_set("Asia/Kuala_Lumpur");
          $fpx_buyer_bank_id   = $request->fpx_buyer_bank_id;
          $description         = $request->description;
-         $description        .= ' Bank Name: ' . $fpx_buyer_bank_name;
+         $description        .= ' Bank Name: ' . $fpx_buyer_bank_name . ' *** fpx_buyer_bank_id = ' . $fpx_buyer_bank_id . '***collection id = ' . $collection_id . '*** fpx_buyer_name= ' . $fpx_buyer_name;
          $txn_type            = $request->txn_type;
-
          $order = Order::find($reference_number);
-         $order->payment_message = $order->payment_message . 'Response Message' . $response;
+         $order->payment_message = $order->payment_message . 'Response Message after success response ' . $response;
          $order->save();
 
          $customer =  DB::table('customers')->where(['CustomerID' => $order->CustomerID])->first();
          $data = ['payment_api_response' => $customer->payment_api_response . ' == ******************* == ' . $log, 'payment_status' => $response];
          return redirect('Promo/' . $customer->CustomerPhone)->with('error', 'User Created Successfully')->with('class', 'success')->with('msg', $response);
       } else {
-         $order = Order::find($reference_number);
-         $order->payment_message = $order->payment_message . 'Response Message' . $response;
+         $order                  =  Order::find($reference_number);
+         $order->payment_message =  $order->payment_message . ' == Response Message when failure records = ' . $response;
          $order->payment_message =  $order->payment_message . $request->description;
+         $order->log_record      =  $request->all();
          $order->save();
-
-         $customer =  DB::table('customers')->where(['CustomerID' => $order->CustomerID])->first();
+         $customer               =  DB::table('customers')->where(['CustomerID' => $order->CustomerID])->first();
          return redirect('Promo/' . $customer->CustomerPhone)->with('error', 'Payment Could not completed')->with('class', 'success')->with('msg', $response);
       }
    }
@@ -324,7 +340,7 @@ class Home extends Controller
     */
    public function createLog($file, $logdata, $type)
    {
-      $folder = __DIR__ . '/../../logs';
+      $folder = public_path('logs');
       $filepath = $folder . '/' . $file . '_' . date("Ymd") . '.txt';
       if (is_dir($folder) == false) {
          mkdir($folder, 0777);

@@ -1,0 +1,35 @@
+2023-09-03 12:55:45
+LogLevel: Success
+Array
+(
+    [amount] => 895
+    [currency] => MYR
+    [customer_name] => Mutahir Shah
+    [description] => Subscribing an offer:2
+    [reference_number] => 2
+    [mandate_reference_number] => 
+    [payment_intent] => d2775e3c5135454f97cc322f26879b50
+    [collection_id] => 
+    [invoice_id] => 
+    [txn_id] => 
+    [external_txn_id] => 
+    [response] => Payment Cancelled
+    [auth_code] => 12
+    [auth_number] => 
+    [txn_date] => 20230903155544
+    [fpx_mode] => 
+    [fpx_buyer_name] => 
+    [fpx_buyer_bank_id] => 
+    [fpx_buyer_bank_name] => 
+    [card_holder_name] => 
+    [card_number] => 
+    [card_expiry] => 
+    [card_brand] => 
+    [card_issuer] => 
+    [card_on_file] => 
+    [signature] => 6cbd9b5dd05a6230daee251d5ddd4e6fb7951acf884b74fce02557701327d52312dfeeb462a179337f38d4bf09fb37abcbc538089c8dc5feaca8d80d9048b552
+    [txn_type] => Unpaid
+    [nonce] => 
+    [metadata] => {}
+)
+-------------------------

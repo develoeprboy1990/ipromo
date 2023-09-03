@@ -1,0 +1,70 @@
+2023-09-03 12:46:17
+LogLevel: Success
+Array
+(
+    [amount] => 40.95
+    [currency] => MYR
+    [customer_name] => Mutahir Shah
+    [description] => Subscribing an offer:2
+    [reference_number] => 1
+    [mandate_reference_number] => 
+    [payment_intent] => dc40490e69a74841a991fc199844980a
+    [collection_id] => JOWTwaKU
+    [invoice_id] => 
+    [txn_id] => PX8460001ded6cbc1988
+    [external_txn_id] => 2309031545590638
+    [response] => Buyer Choose Cancel At Login Page
+    [auth_code] => 1C
+    [auth_number] => 
+    [txn_date] => 20230903154559
+    [fpx_mode] => 01
+    [fpx_buyer_name] => 
+    [fpx_buyer_bank_id] => BIMB0340
+    [fpx_buyer_bank_name] => Bank Islam
+    [card_holder_name] => 
+    [card_number] => 
+    [card_expiry] => 
+    [card_brand] => FPX
+    [card_issuer] => 
+    [card_on_file] => 
+    [signature] => 2885ea633d38cb2e4ab93d6979fec4dab57b3929dd8a5c50d46fc491223e727832569076226e5ea076f9ece49da5c9c5394a6db27889024e013d644ba87ec02d
+    [txn_type] => FPX
+    [nonce] => jgRydkPASp2XVspqhd1vMRM3xfgqdOUmIi7y66u1FcSEmK0qMO5o04kBCHurwSPw
+    [metadata] => {}
+)
+-------------------------
+2023-09-03 12:47:13
+LogLevel: Success
+Array
+(
+    [amount] => 40.95
+    [currency] => MYR
+    [customer_name] => Mutahir Shah
+    [description] => Subscribing an offer:2
+    [reference_number] => 1
+    [mandate_reference_number] => 
+    [payment_intent] => 7fbbd0af59204cea971bfd2e5e9b8d47
+    [collection_id] => 
+    [invoice_id] => 
+    [txn_id] => 
+    [external_txn_id] => 
+    [response] => Payment Cancelled
+    [auth_code] => 12
+    [auth_number] => 
+    [txn_date] => 20230903154713
+    [fpx_mode] => 
+    [fpx_buyer_name] => 
+    [fpx_buyer_bank_id] => 
+    [fpx_buyer_bank_name] => 
+    [card_holder_name] => 
+    [card_number] => 
+    [card_expiry] => 
+    [card_brand] => 
+    [card_issuer] => 
+    [card_on_file] => 
+    [signature] => 6cbd9b5dd05a6230daee251d5ddd4e6fb7951acf884b74fce02557701327d52312dfeeb462a179337f38d4bf09fb37abcbc538089c8dc5feaca8d80d9048b552
+    [txn_type] => Unpaid
+    [nonce] => 
+    [metadata] => {}
+)
+-------------------------

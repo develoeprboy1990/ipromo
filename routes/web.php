@@ -30,7 +30,7 @@ Route::get('/Promo/{id}',[Home::class,'Promo']);
 Route::post('/placeorder',[Home::class,'placeOrder'])->name('placeorder');
 
 Route::any('/accept',[Home::class,'accept'])->name('accept');
-Route::any('/reject',[Home::class,'reject'])->name('reject');
+Route::any('/reject',[Home::class,'response'])->name('reject');
 Route::any('/response',[Home::class,'response'])->name('response');
  
 Route::resource('offers', OfferController::class);
