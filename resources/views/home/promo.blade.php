@@ -182,7 +182,7 @@
                             << Previous </a>
                     </div>
                     <div class="col-sm-2 pt-3">
-                        <input type="submit" class="btn btn-success btn-lg" name="submit" value="Avail Offer">Avail offer >> </input>
+                        <input type="submit" class="btn btn-success btn-lg" name="submit" value="Avail Offer"></input>
                     </div>
                 </div>
             </form>
