@@ -39,6 +39,33 @@ class Home extends Controller
       // opcache_reset(); 
    }
 
+   public function testLogin()
+   {
+      $curl = curl_init();
+      curl_setopt_array($curl, array(
+         CURLOPT_URL => 'http://175.107.63.224/api/v1/guardian/login',
+         CURLOPT_RETURNTRANSFER => true,
+         CURLOPT_ENCODING => '',
+         CURLOPT_MAXREDIRS => 10,
+         CURLOPT_TIMEOUT => 0,
+         CURLOPT_FOLLOWLOCATION => true,
+         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+         CURLOPT_CUSTOMREQUEST => 'POST',
+         CURLOPT_POSTFIELDS => '{
+    "username": "secind",
+    "password": "12345678"
+}',
+         CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+         ),
+      ));
+
+      $response = curl_exec($curl);
+
+      curl_close($curl);
+      echo $response;
+   }
+
 
    public function Show()
    {
@@ -117,15 +144,22 @@ class Home extends Controller
    {
       // $currentOffer = DB::table('offers')->where(['OfferID' => $request->OfferID])->first();
       $customer     =  DB::table('customers')->where(['CustomerID' => $request->CustomerID])->first();
-      /* if ($request->id > 0) {
-         $addons = Product::whereId($request->id)->get();
-      } */
-      $order_id = Order::create($request->all());
+      $product_id   = null;
+      $addonprice   = '0.00';
+      $data         = $request->all();
+      if (!empty($request->product_id)) {
+         $product_id          = json_encode($request->product_id);
+         $addonprice          = $request->addonprice;
+         $data['product_id'] = $product_id;
+      }
+
+      $order = Order::create($data);
       $data = array(
          'customer'      => $customer,
          'OfferID'       => $request->OfferID,
-         'product_id'    => $request->id,
-         'order_id'      => $order_id,
+         'product_id'    => $product_id,
+         'order_id'      => $order,
+         'addonprice'    => $addonprice,
          'totalprice'    => $request->totalprice,
          'subtotalprice' => $request->subtotalprice
       );
