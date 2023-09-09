@@ -36,6 +36,14 @@
             width: 100px;
             height: 100px;
         }
+
+        /* Style the footer */
+        footer {
+            background-color: #ececec;
+            text-align: center;
+            position: sticky;
+            bottom: 0;
+        }
     </style>
 </head>
 
@@ -48,31 +56,38 @@
     <main class="container">
         <div class="container-fluid text-center" id="step1">
             <h1> Best deals of the day</h1>
-            <h3 id="now_date"></h3>
-            <div class="product">
-                <img src="{{URL('/')}}/uploads/thumbnail/{{ $currentOffer->Image }}" alt="{!! $currentOffer->Title !!}" +>
-                <div class="details text-center">
-                    <h3>🔥{!! $currentOffer->Title !!}🔥</h3>
-                    <p>{!! $currentOffer->Description !!}🤩
-                    </p>
-                    <div class="wrap">
-                        <h3 class="offer">Offer ends in</h3>
-                        <div class="timer">
-                            <div class="days">
-                                <span id="days_left"> 0</span>
-                                days
+            <h3 id="now_date" class="pb-3"></h3>
+            <div class="product row">
+                <div class="col-md-2">
+                    <img src="{{URL('/')}}/uploads/thumbnail/{{ $currentOffer->Image }}" alt="{!! $currentOffer->Title !!}" +>
+                </div>
+                <div class="col-md-8">
+                    <div class="details text-center">
+                        <div class="mx-auto">                            
+                        <h3>🔥{!! $currentOffer->Title !!}🔥</h3>
+                        <p>{!! $currentOffer->Description !!}🤩</p>
+                        </div>
+                        <div class="wrap row">
+                            <div class="col pb-3">
+                                <h3 class="offer">Offer ends in</h3>
                             </div>
-                            <div class="hours">
-                                <span id="hours_left"> 0 </span>
-                                hours
-                            </div>
-                            <div class="mins">
-                                <span id="mins_left"> 0 </span>
-                                mins
-                            </div>
-                            <div class="secs">
-                                <span id="secs_left"> 0 </span>
-                                secs
+                            <div class="timer row">
+                                <div class="days col-md-2 col-sm-12">
+                                    <span id="days_left"> 0</span>
+                                    days
+                                </div>
+                                <div class="hours col-md-2 col-sm-12">
+                                    <span id="hours_left"> 0 </span>
+                                    hours
+                                </div>
+                                <div class="mins col-md-2 col-sm-12">
+                                    <span id="mins_left"> 0 </span>
+                                    mins
+                                </div>
+                                <div class="secs col-md-2 col-sm-12">
+                                    <span id="secs_left"> 0 </span>
+                                    secs
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -127,7 +142,7 @@
                                     <h6 class="text-success">Click To Add </h6>
                                     <div class="d-flex flex-column mt-4">
                                         <div class="form-check">
-                                            <input type="radio" class="form-check-input" id="radio1" name="optradio" value="{{$prod->id}}" data-price="{{$prod->price}}">
+                                            <input type="checkbox" class="form-check-input" id="radio{{$prod->id}}" name="product_id[]" value="{{$prod->id}}" data-price="{{$prod->price}}" form="placeorder">
                                             <label class="form-check-label" for="radio1"></label>
                                         </div>
                                     </div>
@@ -140,62 +155,59 @@
 
             @endforeach
             @endif
-            <form action="{{route('placeorder')}}" method="post">
-                @csrf
-                <div class="container mt-3">
-                    <input type="hidden" name="CustomerID" id="CustomerID" value="{{$customer->CustomerID}}">
-                    <input type="hidden" name="offerprice" id="offerprice" value="100">
-                    <input type="hidden" name="discountprice" id="discountprice" value="{{$currentOffer->discount}}">
-                    <input type="hidden" name="subtotalprice" id="subtotalprice" value="">
-                    <input type="hidden" name="totalprice" id="totalprice" value="">
-                    <input type="hidden" name="id" id="id" value="0">
-                    <input type="hidden" name="OfferID" id="OfferID" value=" {{ $currentOffer->OfferID}}">
-                   
-                    <h2>Review Order</h2>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Offer</th>
-                                <th>Discount</th>
-                                <th>Add On price</th>
-                                <th>Sub Total</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span id="offer">50</span></td>
-                                <td><span id="discount">5</span></td>
-                                <td><span id="addon">0</span></td>
-                                <td><span id="subtotal">0</span></td>
-                                <td><span id="total">0</span></td>
-                            </tr>
+            <footer>
+                <form action="{{route('placeorder')}}" method="post" name="placeorder" id="placeorder">
+                    @csrf
+                    <div class="container mt-3">
+                        <input type="hidden" name="CustomerID" id="CustomerID" value="{{$customer->CustomerID}}">
+                        <input type="hidden" name="offerprice" id="offerprice" value="100">
+                        <input type="hidden" name="discountprice" id="discountprice" value="{{$currentOffer->discount}}">
+                        <input type="hidden" name="subtotalprice" id="subtotalprice" value="">
+                        <input type="hidden" name="totalprice" id="totalprice" value="">
+                        <input type="hidden" name="addonprice" id="addonprice" value="0">
+                        <input type="hidden" name="OfferID" id="OfferID" value=" {{ $currentOffer->OfferID}}">
 
-                        </tbody>
-                    </table>
-                </div>
+                        <h2>Review Order</h2>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Offer</th>
+                                    <th>Discount</th>
+                                    <th>Add On price</th>
+                                    <th>Sub Total</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span id="offer">50</span></td>
+                                    <td><span id="discount">5</span></td>
+                                    <td><span id="addon">0</span></td>
+                                    <td><span id="subtotal">0</span></td>
+                                    <td><span id="total">0</span></td>
+                                </tr>
 
-                <div class="row">
-                    <div class="col-sm-4 pt-3"></div>
-                    <div class="col-sm-2 pt-3">
-                        <a class="btn btn-info btn-lg" id="previous">
-                            << Previous </a>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-sm-2 pt-3">
-                        <input type="submit" class="btn btn-success btn-lg" name="submit" value="Avail Offer"></input>
+
+                    <div class="row">
+                        <div class="col-sm-4 pt-3"></div>
+                        <div class="col-sm-2 pt-3">
+                            <a class="btn btn-info btn-lg" id="previous">
+                                << Previous </a>
+                        </div>
+                        <div class="col-sm-2 pt-3">
+                            <input type="submit" class="btn btn-success btn-lg" name="submit" value="Avail Offer"></input>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </footer>
 
 
         </div>
     </main><!-- Container ends here -->
-    <footer class="py-5 text-center text-body-secondary bg-body-tertiary">
-        <p> </p>
-        <p class="mb-0">
-            <a href="#"> </a>
-        </p>
-    </footer>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
@@ -222,7 +234,7 @@
             $('#totalprice').val(subtotalprice);
             $('#total').text(subtotalprice);
 
-            $('.form-check-input').on('change', function() {
+            $('.form-check-input1').on('change', function() {
                 if ($(this).is(':checked')) {
                     //$('#result').text(`Selected value: ${$(this).val()}`);                    
                     var addon = $(this).data('price');
@@ -233,6 +245,31 @@
                     $('#addonid').val($(this).val());
                 }
             });
+
+            // Initialize the total to 0
+            var total = subtotalprice;
+            var addon = 0;
+            // Handle checkbox changes
+            $('input[type="checkbox"]').change(function() {
+                // Get the value of the checkbox that changed
+                var checkboxValue = parseInt($(this).data('price'));
+
+                // Check if the checkbox is checked or unchecked
+                if ($(this).is(':checked')) {
+                    // If checked, add the value to the total
+                    total += checkboxValue;
+                    addon += checkboxValue;
+                } else {
+                    // If unchecked, subtract the value from the total
+                    total -= checkboxValue;
+                    addon -= checkboxValue;
+                }
+                $('#total').text(total);
+                $('#totalprice').val(total);
+                $('#addon').text(addon);
+                $('#addonprice').val(addon);
+            });
+
         });
 
         var offerDate = new Date('<?php echo date('Y-m-d H:i:s', $end_datetime); ?>');

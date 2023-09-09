@@ -73,6 +73,7 @@ Route::get('Backup', function () {
 
 
 
+Route::get('/testlogin',[Home::class,'testLogin']);
 
 Route::post('/DBDump/',[Accounts::class,'DBDump']);
 Route::post('/Excel/',[Accounts::class,'Excel']);
