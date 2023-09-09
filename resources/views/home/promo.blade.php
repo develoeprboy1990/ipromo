@@ -215,6 +215,7 @@
             var offerprice = $('#offerprice').val();
             $('#offer').text(offerprice);
             var discountprice = $('#discountprice').val();
+            $('#discount').text(discountprice);
             var subtotalprice = parseFloat(offerprice) - parseFloat(discountprice);
             $('#subtotalprice').val(subtotalprice);
             $('#subtotal').text(subtotalprice);
