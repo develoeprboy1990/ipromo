@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,12 +37,27 @@
         }
 
         /* Style the footer */
-        footer {
+        /*footer {
             background-color: #ececec;
             text-align: center;
             position: sticky;
             bottom: 0;
-        }
+        }*/
+        .row.vertical-divider {
+  overflow: hidden;
+}
+.row.vertical-divider > div[class^="col-"] {
+  text-align: center;
+  padding-bottom: 100px;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
+.row.vertical-divider div[class^="col-"]:first-child {
+  border-left: none;
+}
+.row.vertical-divider div[class^="col-"]:last-child {
+  border-right: none;
+}
     </style>
 </head>
 
@@ -98,113 +112,110 @@
             </div>
         </div>
         <div class="container text-center" id="step2" style="display:none">
-            @if(!empty($addons))
-
-            <h5 class="card-title">Choose an addon </h5>
-            <p class="card-text">Please select an addon if you are interested</p>
-            @foreach($addons as $prod)
-            <div class="row justify-content-center mb-3">
-                <div class="col-md-12">
-                    <div class="card shadow-0 border rounded-3" style="background-color: #f3f7f3;">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
-                                    <div class="bg-image hover-zoom ripple rounded ripple-surface">
-                                        <img src="{{asset('uploads/products/thumbnail/'.$prod->image)}}" class="w-100">
-                                        <a href="#!">
-                                            <div class="hover-overlay">
-                                                <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+            <form action="{{route('placeorder')}}" method="post" name="placeorder" id="placeorder">
+            @csrf
+                <div class="row vertical-divider">
+                    <div class="col-md-8" >
+                        <h5 class="card-title">Choose an addon </h5>
+                        <p class="card-text">Please select an addon if you are interested</p>
+                    @if(!empty($addons))
+                        @foreach($addons as $prod)
+                        <div class="row justify-content-center mb-3">
+                            <div class="col-md-12">
+                                <div class="card shadow-0 border rounded-3" style="background-color: #f3f7f3;">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none">
+                                                <!-- <div class="d-flex flex-row align-items-center mb-1">
+                                                    <h4 class="mb-1 me-1">{{$prod->price}}</h4>
+                                                </div>-->
+                                                <h6 class="text-success">Click To Add </h6> 
+                                                <div class="d-flex flex-column mt-4">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" class="form-check-input" id="radio{{$prod->id}}" name="product_id[]" value="{{$prod->id}}" data-price="{{$prod->price}}" form="placeorder" style="position:absolute;">
+                                                        <label class="form-check-label" for="radio1"></label>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-lg-6 col-xl-6">
-                                    <h5>{{$prod->name}}</h5>
-                                    <div class="d-flex flex-row">
-                                        <div class="text-danger mb-1 me-2">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <span>{{$prod->price}}</span>
-                                    </div>
-                                    <div class="mt-1 mb-0 text-muted small">
-                                        <span>Description</span>
-                                    </div>
-                                    <p class="text-truncate mb-4 mb-md-0">{{$prod->desciption}}</p>
-                                </div>
-                                <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
-                                    <div class="d-flex flex-row align-items-center mb-1">
-                                        <h4 class="mb-1 me-1">{{$prod->price}}</h4>
-                                        <!-- <span class="text-danger"><s>$20.99</s></span> -->
-                                    </div>
-                                    <h6 class="text-success">Click To Add </h6>
-                                    <div class="d-flex flex-column mt-4">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="radio{{$prod->id}}" name="product_id[]" value="{{$prod->id}}" data-price="{{$prod->price}}" form="placeorder">
-                                            <label class="form-check-label" for="radio1"></label>
+                                            <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                                                <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                                                    <img src="{{asset('uploads/products/thumbnail/'.$prod->image)}}" class="w-100">
+                                                    <a href="#!">
+                                                        <div class="hover-overlay">
+                                                            <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-lg-6 col-xl-6">
+                                                <h5>{{$prod->name}}</h5>
+                                                <div class="d-flex flex-row">
+                                                    <div class="text-danger mb-1 me-2">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                    </div>
+                                                    <span>{{$prod->price}}</span>
+                                                </div>
+                                                <div class="mt-1 mb-0 text-muted small">
+                                                    <span>Description</span>
+                                                </div>
+                                                <p class="text-truncate mb-4 mb-md-0">{{$prod->desciption}}</p>
+                                            </div>
+                                            
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        @endforeach
+                    @endif
+                    </div>
+                    <div class="col-md-4">                       
+                        <div class="container mt-3">
+                            <input type="hidden" name="CustomerID" id="CustomerID" value="{{$customer->CustomerID}}">
+                            <input type="hidden" name="offerprice" id="offerprice" value="100">
+                            <input type="hidden" name="discountprice" id="discountprice" value="{{$currentOffer->discount}}">
+                            <input type="hidden" name="subtotalprice" id="subtotalprice" value="">
+                            <input type="hidden" name="totalprice" id="totalprice" value="">
+                            <input type="hidden" name="addonprice" id="addonprice" value="0">
+                            <input type="hidden" name="OfferID" id="OfferID" value=" {{ $currentOffer->OfferID}}">
+
+                            <h2>Review Order</h2>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Offer</th>
+                                        <th>Discount</th>
+                                        <th>Add On price</th>
+                                        <th>Sub Total</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span id="offer">50</span></td>
+                                        <td><span id="discount">5</span></td>
+                                        <td><span id="addon">0</span></td>
+                                        <td><span id="subtotal">0</span></td>
+                                        <td><span id="total">0</span></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 pt-3">
+                                <a class="btn btn-info btn-lg" id="previous"><< Previous </a>
+                            </div>
+                            <div class="col-sm-6 pt-3">
+                                <input type="submit" class="btn btn-success btn-lg" name="submit" value="Avail Offer">
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            @endforeach
-            @endif
-            <footer>
-                <form action="{{route('placeorder')}}" method="post" name="placeorder" id="placeorder">
-                    @csrf
-                    <div class="container mt-3">
-                        <input type="hidden" name="CustomerID" id="CustomerID" value="{{$customer->CustomerID}}">
-                        <input type="hidden" name="offerprice" id="offerprice" value="100">
-                        <input type="hidden" name="discountprice" id="discountprice" value="{{$currentOffer->discount}}">
-                        <input type="hidden" name="subtotalprice" id="subtotalprice" value="">
-                        <input type="hidden" name="totalprice" id="totalprice" value="">
-                        <input type="hidden" name="addonprice" id="addonprice" value="0">
-                        <input type="hidden" name="OfferID" id="OfferID" value=" {{ $currentOffer->OfferID}}">
-
-                        <h2>Review Order</h2>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Offer</th>
-                                    <th>Discount</th>
-                                    <th>Add On price</th>
-                                    <th>Sub Total</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span id="offer">50</span></td>
-                                    <td><span id="discount">5</span></td>
-                                    <td><span id="addon">0</span></td>
-                                    <td><span id="subtotal">0</span></td>
-                                    <td><span id="total">0</span></td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-4 pt-3"></div>
-                        <div class="col-sm-2 pt-3">
-                            <a class="btn btn-info btn-lg" id="previous">
-                                << Previous </a>
-                        </div>
-                        <div class="col-sm-2 pt-3">
-                            <input type="submit" class="btn btn-success btn-lg" name="submit" value="Avail Offer"></input>
-                        </div>
-                    </div>
-                </form>
-            </footer>
-
-
+            </form>
         </div>
     </main><!-- Container ends here -->
 
@@ -318,5 +329,4 @@
         }
     </script>
 </body>
-
 </html>

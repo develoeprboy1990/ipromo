@@ -6,6 +6,7 @@
         cursor: pointer;
     }
 </style>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
@@ -71,6 +72,30 @@
                                                         <input type="text" id="Title" class="form-control" name="Title" placeholder="Title" value="{{@$offer->Title}}">
                                                     </div>
                                                 </div>
+
+                                                <div class="mb-3 row">
+                                                    <div class="col-sm-2">
+                                                        <label class="col-form-label fw-bold" for="Title">Level</label>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <select name="Level" class="form-select">
+                                                            <option value="L1">L1</option>
+                                                            <option value="L2">L2</option>
+                                                            <option value="L3">L3</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                  <div class="mb-3 row">
+                                                    <div class="col-sm-2">
+                                                        <label class="col-form-label fw-bold" for="Days">Days</label>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <input type="number" id="Days" class="form-control" name="Days" placeholder="Days" value="{{@$offer->Days}}">
+                                                    </div>
+                                                </div>
+
+
                                                 <div class="mb-3 row">
                                                     <div class="col-sm-2">
                                                         <label class="col-form-label " for="Description">Description</label>
@@ -93,16 +118,40 @@
 
                                                 <div class="mb-3 row">
                                                     <div class="col-sm-2">
-                                                        <label class="col-form-label fw-bold" for="Days">Days</label>
+                                                        <label class="col-form-label fw-bold" for="Title">Group Tag</label>
                                                     </div>
+                                                    <div class="col-sm-6">
+                                                        <select name="GroupTag" class="form-select select2" id="GroupTag"  multiple="multiple">
+                                                             @foreach($tags as $tag)
+                                                             <option value="{{$tag->TagName}}">{{$tag->TagName}}</option>
+                                                             @endforeach
+                                                        </select> 
+
+                                                        <div class="dropdown_items"></div>
+                                                        <div class="new_items"></div>
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaxModal">Add Tax</button>
+                                                    </div>
+                                                    
+                                                </div>
+
+
+                                                <div class="mb-3 row">
                                                     <div class="col-sm-2">
-                                                        <input type="number" id="Days" class="form-control" name="Days" placeholder="Days" value="{{@$offer->Days}}">
+                                                        <label class="col-form-label fw-bold" for="Offer Type">Offer Type</label>
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                        <select name="OfferType" class="form-select" id="offer-type">
+                                                            <option value="Offer">Offer</option>
+                                                            <option value="Discount">Discount</option>
+                                                        </select>
                                                     </div>
 
-                                                    <div class="col-sm-2">
-                                                        <label class="col-form-label fw-bold" for="Days">Discount</label>
+                                                    <div class="col-sm-2 discount" >
+                                                        <label class="col-form-label fw-bold" for="Discount">Discount</label>
                                                     </div>
-                                                    <div class="col-sm-5">
+                                                    <div class="col-sm-4 discount" >
                                                         <input type="number" id="discount" class="form-control" name="discount" placeholder="Discount" value="{{@$offer->discount}}">
                                                     </div>
 
@@ -171,8 +220,96 @@
                 </div> <!-- container-fluid -->
             </div>
         </div>
+
+
+        <!-- Add Modal -->
+        <div class="modal fade" id="addTaxModal" tabindex="-1" role="dialog" aria-labelledby="addTaxModal" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addTaxModalTitle">Add Tag</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                    <div class="row col-md-12">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="Type Tag Name" required id="tag_name">
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" id="save_tag">Save</button>
+                    </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <script>
             $(document).ready(function() {
+
+                $('.select2').select2();
+
+
+                $('.discount').hide();
+
+                $('#offer-type').on('change', function() {
+
+                if($(this).val() == 'Offer') {
+                    $('.discount').hide();
+                }else{
+                    $('.discount').show();
+                }
+            });
+
+
+        $(document.body).on('click','#save_tag',function(){
+            var tag_name = $('#tag_name').val();
+    
+            $.ajax({
+                url: "{{url('save-tag')}}",
+                dataType: 'JSON',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    tag_name: tag_name,
+                },
+                success: function(data) {
+                    if(data){
+
+                        var ul = $('<ul>');
+                        $('.new_items').empty();
+
+                        ul.append('<li>' + data['tag_name'] + '</li><input type="hidden" value="' + data['tag_name'] + '" name="new_items[]">');
+
+                        $('.new_items').html(ul);
+                        $("#addTaxModal").modal('hide');
+                    }
+                }
+            });
+        });
+
+        $('#GroupTag').on('change', function() {
+            var ul = $('<ul>');
+            $('.dropdown_items').empty();
+
+            $(this).find('option').each(function(index, element) {
+                if($(element).is(':selected')) {
+                    ul.append('<li>' + $(element).text() + '</li><input type="hidden" value="' + $(element).text() + '" name="dropdown_items[]">');
+                }
+            });
+            $('.dropdown_items').html(ul);
+        });
+
+
+
+
                 $('.remove').click(function() {
                     var recordId = $(this).data("record-id");
                     var confirmDelete = confirm("Are you sure you want to delete this record?");

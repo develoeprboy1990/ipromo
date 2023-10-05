@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Offer;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 use Session;
@@ -21,7 +22,9 @@ class OfferController extends Controller
         session::put('menu', 'Offers');
         $pagetitle = 'Offers';
         $offers = Offer::get();
-        return  view('offers', compact('offers', 'pagetitle'));
+        $tags = Tag::get();
+        
+        return  view('offers', compact('offers','tags', 'pagetitle'));
     }
 
     /**
@@ -156,6 +159,19 @@ class OfferController extends Controller
         return redirect()->route('offers.index')->with([
             'message' => 'Offer deleted successfully!',
             'status' => 'success'
+        ]);
+    }
+
+    public function saveTag(Request $request)
+    {
+
+        $tag = new Tag;
+        $tag->TagName = $request->tag_name;
+        $tag->save();
+
+
+        return response()->json([
+            'tag_name' => $request->tag_name,
         ]);
     }
 }
