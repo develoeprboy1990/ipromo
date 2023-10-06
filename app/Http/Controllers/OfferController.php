@@ -23,8 +23,8 @@ class OfferController extends Controller
         $pagetitle = 'Offers';
         $offers = Offer::get();
         $tags = Tag::get();
-        
-        return  view('offers', compact('offers','tags', 'pagetitle'));
+
+        return  view('offers', compact('offers', 'tags', 'pagetitle'));
     }
 
     /**
@@ -49,12 +49,18 @@ class OfferController extends Controller
         $input = $request->all();
         $this->validate(
             $request,
-            ['Title' => 'required'],
             [
-                'Days.required' => 'Days required',
-                'Image.required' => 'Image required'
+                'Title' => 'required',
+                'Days'   => 'required',
+                'Image'  => 'required'
             ]
         );
+
+
+        if (!empty($input['new_items'])) {
+            $input['dropdown_items'] = array_merge($input['dropdown_items'], $input['new_items']);
+        }
+        $input['GroupTag'] = implode(",", $input['dropdown_items']);
 
         $imageName = null;
         $image = $request->file('Image');
@@ -164,12 +170,9 @@ class OfferController extends Controller
 
     public function saveTag(Request $request)
     {
-
         $tag = new Tag;
         $tag->TagName = $request->tag_name;
         $tag->save();
-
-
         return response()->json([
             'tag_name' => $request->tag_name,
         ]);

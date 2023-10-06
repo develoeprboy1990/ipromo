@@ -9,7 +9,8 @@ class Offer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['Title', 'Description', 'Image', 'Days','OfferType','discount','Level','GroupTag'];
-    public $timestamps = false;
+    protected $fillable   = ['Title', 'Description', 'Image', 'Days','OfferType','discount','Level','GroupTag'];
+    public $timestamps    = false;
     protected $primaryKey = 'OfferID';
+    
 }
