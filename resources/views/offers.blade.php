@@ -115,7 +115,6 @@
                                                         <input type="file" name="Image" class="form-control" accept="image/*">
                                                     </div>
                                                 </div>
-
                                                 <div class="mb-3 row">
                                                     <div class="col-sm-2">
                                                         <label class="col-form-label fw-bold" for="Title">Group Tag</label>
@@ -123,11 +122,39 @@
                                                     <div class="col-sm-6">
                                                         <select name="GroupTag" class="form-select select2" id="GroupTag"  multiple="multiple">
                                                              @foreach($tags as $tag)
-                                                             <option value="{{$tag->TagName}}">{{$tag->TagName}}</option>
+                                                             @php
+                                                               $selected =  "";
+                                                                if(@$offer){
+
+                                                                $str_arr = explode(',', @$offer->GroupTag);
+                                                                if (in_array($tag->TagName, $str_arr)){
+                                                                $selected =  "selected";
+                                                                }
+                                                                else
+                                                                {
+                                                                $selected =  "";
+                                                                }
+                                                                }
+                                                             @endphp
+                                                            <option value="{{$tag->TagName}}" {{$selected}}>
+                                                                {{$tag->TagName}}
+                                                            </option>
                                                              @endforeach
                                                         </select> 
 
-                                                        <div class="dropdown_items"></div>
+                                                        <div class="dropdown_items">
+                                                            <ul>
+                                                                @php
+                                                                if(!empty($str_arr)){
+                                                                    foreach(@$str_arr as $str)
+                                                                    {
+                                                                        echo '<li>'.$str.'</li>';
+                                                                        echo '<input type="hidden" value="'.$str.'" name="dropdown_items[]">';
+                                                                    }
+                                                                }           
+                                                                @endphp
+                                                            </ul>
+                                                        </div>
                                                         <div class="new_items"></div>
                                                     </div>
                                                     <div class="col-sm-3">
@@ -185,7 +212,10 @@
                                                     <th>Image</th>
                                                     <th>Title</th>
                                                     <th>Description</th>
+                                                    <th>Level</th>
+                                                    <th>Group Tag</th>
                                                     <th>Days</th>
+                                                    <th>Offer Type</th>
                                                     <th>Discount</th>
                                                     <th>Actions</th>
                                                 </tr>
@@ -198,8 +228,12 @@
                                                     <td> <img src="{{URL('/')}}/uploads/{{ $offer->Image }}" width="100px" height="100px"></td>
                                                     <td scope="row">{{$offer->Title}}</td>
                                                     <td>{{$offer->Description}}</td>
-
+                                                    <td>{{$offer->Level}}</td>
+                                                    <td>{{$offer->GroupTag}}</td>
+                                                    
                                                     <td>{{$offer->Days}}</td>
+                                                    <td>{{$offer->OfferType}}</td>
+                                                    
                                                     <td>{{$offer->discount}}</td>
                                                     <td><a href="{{route('offers.edit',$offer->OfferID)}}" title="Edit"><i class="font-size-18 mdi mdi-pencil align-middle me-1 text-secondary"></i></a>
                                                         <i class="font-size-18 mdi mdi-trash-can-outline align-middle me-1 text-secondary remove" data-record-id="{{$offer->OfferID}}"></i>

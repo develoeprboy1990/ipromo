@@ -83,6 +83,15 @@
           <input type="text" id="RentalRate" name="RentalRate" placeholder="Your Rental Rate ..." class=" form-control">
         </div>
         <div class="mb-3">
+          <label for="fname" class="form-label">Group Tag</label>
+          <select name="GroupTag" class=" form-control" required>
+            <option value="">--Select Tag--</option>
+            @foreach($tags as $tag)
+            <option value="{{$tag->TagName}}" >{{$tag->TagName}}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="mb-3">
           <label for="lname" class="form-label">Address</label>
           <textarea name="Address" class=" form-control"></textarea>
         </div>

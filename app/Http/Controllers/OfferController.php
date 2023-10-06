@@ -104,7 +104,12 @@ class OfferController extends Controller
         session::put('menu', 'Offers');
         $pagetitle = 'Offers';
         $offers = Offer::get();
-        return  view('offers', compact('offers', 'offer', 'pagetitle'));
+        $tags = Tag::get();
+
+
+
+
+        return  view('offers', compact('offers', 'offer', 'pagetitle','tags'));
     }
 
     /**
@@ -136,11 +141,27 @@ class OfferController extends Controller
             $imageName = $offer->Image;
         }
 
+
+
+        if (!empty($request->input('new_items'))) {
+           $dropdown_items = array_merge($request->input('dropdown_items'), $request->input('new_items'));
+        }else{
+            $dropdown_items =$request->input('dropdown_items');
+        }
+        
+
         $offer->Title = $request->input('Title');
         $offer->Description = trim($request->input('Description'));
         $offer->Days = trim($request->input('Days'));
         $offer->discount = trim($request->input('discount'));
         $offer->image = $imageName;
+
+        $offer->OfferType = trim($request->input('OfferType'));
+
+        $offer->Level =  trim($request->input('Level'));
+        
+        $offer->GroupTag = implode(",",  $dropdown_items);
+
         $offer->save();
         return redirect()->route('offers.index')->with([
             'message' => 'Offer updated successfully!',

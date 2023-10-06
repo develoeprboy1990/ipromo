@@ -140,6 +140,7 @@
                 <th>Full Name</th>
                 <th>Phone Number</th>
                 <th>Rental Rate</th>
+                <th>Group Tag</th>
                 <th>Address</th>
                 <th>Agent By</th>
                 <th>Created on</th>
@@ -157,6 +158,8 @@
                 <td scope="row">{{$value->CustomerName}}</td>
                 <td>{{$value->CustomerPhone}}</td>
                 <td>{{$value->RentalRate}}</td>
+                <td>{{$value->GroupTag}}</td>
+                
                 <td>{{$value->Address}}</td>
                 <td>{{$value->FullName}}</td>
                 

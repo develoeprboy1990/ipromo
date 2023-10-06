@@ -73,7 +73,9 @@ class Home extends Controller
       $pagetitle = 'User';
       $agents = DB::table('user')->where(['UserType' => 'Agent'])->get();
       $agent_requested = '';
-      return  view('home.home', compact('pagetitle', 'agents', 'agent_requested'));
+      $tags = DB::table('tags')->get();
+      
+      return  view('home.home', compact('pagetitle', 'agents', 'agent_requested','tags'));
    }
 
    public function ShowAgent($Agent)
@@ -93,12 +95,14 @@ class Home extends Controller
       $buyer_name      = $request->input('FullName');
       $submeterAddress = $request->input('Address');
       $price           = $request->input('RentalRate');
+      $GroupTag        = $request->input('GroupTag');
       $data = array(
          'AgentID'       =>  $request->input('AgentID'),
          'CustomerName'  => $buyer_name,
          'CustomerPhone' => $CustomerPhone,
          'RentalRate'    => $price,
-         'Address'       => $submeterAddress
+         'Address'       => $submeterAddress,
+         'GroupTag'      => $GroupTag
       );
       $rec_id = DB::table('customers')->insertGetId($data);
 
