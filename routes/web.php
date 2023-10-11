@@ -34,7 +34,9 @@ Route::any('/reject',[Home::class,'reject'])->name('reject');
 Route::any('/response',[Home::class,'response'])->name('response');
  
 Route::resource('offers', OfferController::class);
-Route::post('/save-tag', [OfferController::class, 'saveTag']);
+Route::post('/save-tag', [OfferController::class, 'saveTag']); 
+
+Route::get('/getproduct/{id}', [ProductController::class, 'getProduct'])->name('getproduct');
 Route::resource('products', ProductController::class);
 Route::get('/',[Accounts::class,'Login']);
 Route::get('/Login',[Accounts::class,'Login']);

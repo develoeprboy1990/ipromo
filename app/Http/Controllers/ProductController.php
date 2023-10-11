@@ -89,6 +89,15 @@ class ProductController extends Controller
         return view('products.show', compact('product'));
     }
 
+
+    public function getProduct(Request $request, $id)
+        { 
+           $prod = Product::findOrFail($id);
+            $html ='<tr id="productid_'.$prod->id.'"><td><img src="'.asset('uploads/products/thumbnail/'.$prod->image).'" class="w-50"></td><td>'.$prod->name.'</td><td class="sum-td">'.$prod->price.'</td> <index type="text" class="sum-input" value="'.$prod->price.'"/><td><a href="" class="remove-item" data-id="productid_'.$prod->id.'" data-value="product_'.$prod->id.'" title="Remove"><i class="fa-solid fa-rectangle-xmark fa-fw"></i></a></td></tr>';
+
+            return $html;
+        }
+
     /**
      * Show the form for editing the specified resource.
      *

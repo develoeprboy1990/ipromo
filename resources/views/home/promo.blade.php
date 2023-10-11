@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +10,8 @@
 
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{asset('assets/images/favicon.jpeg')}}">
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css">
     <style>
         .floating-button {
             position: fixed;
@@ -44,20 +47,23 @@
             bottom: 0;
         }*/
         .row.vertical-divider {
-  overflow: hidden;
-}
-.row.vertical-divider > div[class^="col-"] {
-  text-align: center;
-  padding-bottom: 100px;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
-}
-.row.vertical-divider div[class^="col-"]:first-child {
-  border-left: none;
-}
-.row.vertical-divider div[class^="col-"]:last-child {
-  border-right: none;
-}
+            overflow: hidden;
+        }
+
+        .row.vertical-divider>div[class^="col-"] {
+            text-align: center;
+            padding-bottom: 100px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+
+        .row.vertical-divider div[class^="col-"]:first-child {
+            border-left: none;
+        }
+
+        .row.vertical-divider div[class^="col-"]:last-child {
+            border-right: none;
+        }
     </style>
 </head>
 
@@ -77,9 +83,9 @@
                 </div>
                 <div class="col-md-8">
                     <div class="details text-center">
-                        <div class="mx-auto">                            
-                        <h3>🔥{!! $currentOffer->Title !!}🔥</h3>
-                        <p>{!! $currentOffer->Description !!}🤩</p>
+                        <div class="mx-auto">
+                            <h3>🔥{!! $currentOffer->Title !!}🔥</h3>
+                            <p>{!! $currentOffer->Description !!}🤩</p>
                         </div>
                         <div class="wrap row">
                             <div class="col pb-3">
@@ -113,12 +119,12 @@
         </div>
         <div class="container text-center" id="step2" style="display:none">
             <form action="{{route('placeorder')}}" method="post" name="placeorder" id="placeorder">
-            @csrf
+                @csrf
                 <div class="row vertical-divider">
-                    <div class="col-md-8" >
+                    <div class="col-md-8">
                         <h5 class="card-title">Choose an addon </h5>
                         <p class="card-text">Please select an addon if you are interested</p>
-                    @if(!empty($addons))
+                        @if(!empty($addons))
                         @foreach($addons as $prod)
                         <div class="row justify-content-center mb-3">
                             <div class="col-md-12">
@@ -129,11 +135,11 @@
                                                 <!-- <div class="d-flex flex-row align-items-center mb-1">
                                                     <h4 class="mb-1 me-1">{{$prod->price}}</h4>
                                                 </div>-->
-                                                <h6 class="text-success">Click To Add </h6> 
+                                                <h6 class="text-success">Click To Add </h6>
                                                 <div class="d-flex flex-column mt-4">
                                                     <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="radio{{$prod->id}}" name="product_id[]" value="{{$prod->id}}" data-price="{{$prod->price}}" form="placeorder" style="position:absolute;">
-                                                        <label class="form-check-label" for="radio1"></label>
+                                                        <input type="checkbox" class="form-check-input" id="product_{{$prod->id}}" name="product_id[]" value="{{$prod->id}}" data-price="{{$prod->price}}" form="placeorder" style="position:absolute;">
+                                                        <label class="form-check-label" for="product_{{$prod->id}}"></label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -163,51 +169,57 @@
                                                 </div>
                                                 <p class="text-truncate mb-4 mb-md-0">{{$prod->desciption}}</p>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         @endforeach
-                    @endif
+                        @endif
                     </div>
-                    <div class="col-md-4">                       
+                    <div class="col-md-4">
                         <div class="container mt-3">
                             <input type="hidden" name="CustomerID" id="CustomerID" value="{{$customer->CustomerID}}">
                             <input type="hidden" name="offerprice" id="offerprice" value="100">
-                            <input type="hidden" name="discountprice" id="discountprice" value="{{$currentOffer->discount}}">
+                            <input type="hidden" name="discountprice" id="discountprice" value="{{!empty($currentOffer->discount)? $currentOffer->discount:0}}">
                             <input type="hidden" name="subtotalprice" id="subtotalprice" value="">
                             <input type="hidden" name="totalprice" id="totalprice" value="">
                             <input type="hidden" name="addonprice" id="addonprice" value="0">
                             <input type="hidden" name="OfferID" id="OfferID" value=" {{ $currentOffer->OfferID}}">
 
                             <h2>Review Order</h2>
-                            <table class="table table-bordered">
+                            <table class="table table-bordered order-list" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>Offer</th>
-                                        <th>Discount</th>
-                                        <th>Add On price</th>
-                                        <th>Sub Total</th>
-                                        <th>Total</th>
+                                        <th>Image</th>
+                                        <th>Title</th>
+                                        <th>Price</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <!--  <tr>
                                         <td><span id="offer">50</span></td>
                                         <td><span id="discount">5</span></td>
                                         <td><span id="addon">0</span></td>
                                         <td><span id="subtotal">0</span></td>
                                         <td><span id="total">0</span></td>
-                                    </tr>
+                                    </tr> -->
 
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2">Total</td>
+                                        <td id="total" colspan="2">0</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <div class="row">
                             <div class="col-sm-6 pt-3">
-                                <a class="btn btn-info btn-lg" id="previous"><< Previous </a>
+                                <a class="btn btn-info btn-lg" id="previous">
+                                    << Previous </a>
                             </div>
                             <div class="col-sm-6 pt-3">
                                 <input type="submit" class="btn btn-success btn-lg" name="submit" value="Avail Offer">
@@ -221,6 +233,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/c2ef102343.js" crossorigin="anonymous"></script>
 
     <script>
         $(document).ready(function() {
@@ -261,26 +274,72 @@
             var total = subtotalprice;
             var addon = 0;
             // Handle checkbox changes
-            $('input[type="checkbox"]').change(function() {
-                // Get the value of the checkbox that changed
-                var checkboxValue = parseInt($(this).data('price'));
-
-                // Check if the checkbox is checked or unchecked
+            //  $('input[type="checkbox"]').change(function() {
+            $(document).on('change', 'input[type="checkbox"]', function() {
+                var newId = $(this).val();
+                var sum = 0;
                 if ($(this).is(':checked')) {
-                    // If checked, add the value to the total
-                    total += checkboxValue;
-                    addon += checkboxValue;
+                    var route = "{{ route('getproduct', ':id') }}";
+                    route = route.replace(':id', newId)
+                    $.ajax({
+                        type: 'GET',
+                        url: route,
+                        success: function(data) {
+                            $("table.order-list tbody").prepend(data);
+                            // Select all <td> elements with the class "sum-td" in the table
+                            $('table td.sum-td').each(function() {
+                                var cellValue = parseFloat($(this).text()); // Parse the cell's text as a float
+
+                                if (!isNaN(cellValue)) {
+                                    sum += cellValue;
+                                }
+                            });
+
+                            // Display the sum in an element of your choice, e.g., an HTML element with ID "totalSum"
+                            $('#total').text(sum);
+                        }
+                    });
+
+
+
                 } else {
-                    // If unchecked, subtract the value from the total
-                    total -= checkboxValue;
-                    addon -= checkboxValue;
+                    $('#productid_' + newId).remove();
+                    // Select all <td> elements with the class "sum-td" in the table
+                    $('table td.sum-td').each(function() {
+                        var cellValue = parseFloat($(this).text()); // Parse the cell's text as a float
+
+                        if (!isNaN(cellValue)) {
+                            sum += cellValue;
+                        }
+                    });
+
+                    // Display the sum in an element of your choice, e.g., an HTML element with ID "totalSum"
+                    $('#total').text(sum);
                 }
-                $('#total').text(total);
-                $('#totalprice').val(total);
-                $('#addon').text(addon);
-                $('#addonprice').val(addon);
+
             });
 
+            $(document).on('click', '.remove-item', function(e) {
+                e.preventDefault();
+
+                var id = $(this).data('id');
+                var value = $(this).data('value');
+                $("#" + id).remove();
+                // To uncheck the checkbox with ID "myCheckbox"
+                $("#" + value).prop('checked', false);
+
+
+                var sum = 0;
+                $('table td.sum-td').each(function() {
+                    var cellValue = parseFloat($(this).text()); // Parse the cell's text as a float 
+                    console.log(cellValue);
+                    if (!isNaN(cellValue)) {
+                        sum += cellValue;
+                    }
+                });
+                // Display the sum in an element of your choice, e.g., an HTML element with ID "totalSum"
+                $('#total').text(sum);
+            });
         });
 
         var offerDate = new Date('<?php echo date('Y-m-d H:i:s', $end_datetime); ?>');
@@ -329,4 +388,5 @@
         }
     </script>
 </body>
+
 </html>

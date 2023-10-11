@@ -144,6 +144,8 @@ class Home extends Controller
       }
    }
 
+  
+
    public function placeOrder(Request $request)
    {
       // $currentOffer = DB::table('offers')->where(['OfferID' => $request->OfferID])->first();
