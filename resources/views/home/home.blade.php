@@ -47,6 +47,7 @@
     .form-div {
       margin: auto;
       border-radius: 5px;
+      background-color: #ededed;
       padding: 20px;
     }
   </style>
